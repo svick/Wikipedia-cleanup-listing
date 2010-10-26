@@ -18,19 +18,18 @@
         $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
         $con = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password'])
                 or die('Could not connect: ' . mysql_error()); 
+        $user_table = "u_${ts_mycnf['user']}.articles";
         unset($ts_mycnf);
         unset($ts_pw);
  
         mysql_select_db('enwiki_p', $con)
                 or die('Could not select db: ' . mysql_error());
  
-        $user_table = "u_${ts_mycnf['user']}.articles";
- 
         //foreach as opposed to while for legibility
         foreach($wikiprojects as $wikiproject)
         {
             //Create temporary table
-            $sql = "CREATE TABLE $user_table(
+            $sql = "CREATE TABLE IF NOT EXISTS $user_table(
                         pageid INT(8) UNSIGNED,
                         article VARCHAR(255),
                         importance VARCHAR(7),
@@ -57,7 +56,7 @@
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." articles: ". mysql_error());
  
-            echo "Processing importances";
+            echo "Processing importances\n";
  
             //Set importance
             foreach($importances as $importance)
@@ -83,7 +82,7 @@
                         or die('Could not load WikiProject '.$wikiproject." importance: ". mysql_error());
             }
  
-            echo "Processing classes";
+            echo "Processing classes\n";
  
             //Set Class
             foreach($classes as $class)
@@ -112,7 +111,7 @@
             foreach($cleanupcountercats as $countercat)
             {
  
-            echo "Processing $countercat";
+            echo "Processing $countercat\n";
  
                 //to do create table for each cat
  
