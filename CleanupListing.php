@@ -16,12 +16,12 @@
  
         $ts_pw = posix_getpwuid(posix_getuid());
         $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
-        $db = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password']);
+        $con = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password']);
                 or die('Could not connect: ' . mysql_error()); 
         unset($ts_mycnf);
         unset($ts_pw);
  
-        mysql_select_db('enwiki_p', $db);
+        mysql_select_db('enwiki_p', $con);
                 or die('Could not select db: ' . mysql_error());
  
         $user_table = "u_${ts_mycnf['user']}.articles";
@@ -39,7 +39,7 @@
                         taskforce VARCHAR(255),
                         categories TEXT NOT NULL
                     )";
-            mysql_query($sql,$db)
+            mysql_query($sql,$con)
                     or die('Could not create table: ' . mysql_error());
  
             //Load articles and pageid from WikiProject
