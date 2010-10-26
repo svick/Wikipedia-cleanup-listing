@@ -28,9 +28,14 @@
         //foreach as opposed to while for legibility
         foreach($wikiprojects as $wikiproject)
         {
+	    $sql = "DROP TABLE IF EXISTS $user_table";
+	    mysql_query($sql,$con)
+                    or die('Could not drop table: ' . mysql_error());
+ 
             //Create temporary table
-            $sql = "CREATE TABLE IF NOT EXISTS $user_table(
-                        pageid INT(8) UNSIGNED,
+            $sql = "CREATE TABLE $user_table(
+                        articleid INT(8) UNSIGNED,
+                        talkid INT(8) UNSIGNED,
                         article VARCHAR(255),
                         importance VARCHAR(7),
                         quality VARCHAR(5),
@@ -46,13 +51,16 @@
             $sql = "
                 INSERT INTO $user_table
                 (
-                    pageid,
+                    articleid,
+		    talkid,
                     article
                 )
-                SELECT page_id as pageid, page_title as article FROM page
-                        JOIN categorylinks AS cl1 ON page.page_id = cl1.cl_from
-                                WHERE cl1.cl_to = ".$categoryarticles.
-                                "AND page.page_namespace = 0";
+                SELECT article.page_id as articleid, talk.page_id as talkid, article.page_title as article FROM page AS article
+		        JOIN page AS talk ON article.page_title = talk.page_title
+                        JOIN categorylinks AS cl1 ON talk.page_id = cl1.cl_from
+                                WHERE cl1.cl_to = ".$categoryarticles."
+				AND article.page_namespace = 0
+				AND talk.page_namespace = 1";
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." articles: ". mysql_error());
  
@@ -65,19 +73,22 @@
                 $theimportance = $importance."-importance_".$wikiproject."_articles";
                 //http://www.electrictoolbox.com/article/mysql/cross-table-update/
                 $sql = "UPDATE $user_table a
-                        LEFT JOIN categorylinks cl
-                        ON a.pageid = cl.cl_from
                         SET a.importance = '".$importance."'"."
-                        WHERE cl.cl_to = '".$theimportance."'";
+			WHERE a.talkid IN
+			  (SELECT cl.cl_from
+			   FROM categorylinks cl
+                           WHERE cl.cl_to = '".$theimportance."')";
                 mysql_query($sql,$con)
                         or die('Could not load WikiProject '.$wikiproject." importance: ". mysql_error());
  
+                $theimportance = $importance."-importance_".strtolower($wikiproject)."_articles";
                     //lowercase
                 $sql = "UPDATE $user_table a
-                        LEFT JOIN categorylinks cl
-                        ON a.pageid = cl.cl_from
                         SET a.importance = '".$importance."'"."
-                        WHERE cl.cl_to = '".strtolower($theimportance)."'";
+			WHERE a.talkid IN
+			  (SELECT cl.cl_from
+			   FROM categorylinks cl
+                           WHERE cl.cl_to = '".$theimportance."')";
                 mysql_query($sql,$con)
                         or die('Could not load WikiProject '.$wikiproject." importance: ". mysql_error());
             }
@@ -88,21 +99,24 @@
             foreach($classes as $class)
             {
                                 //try both upper and lower - to do
-               $theclass = $class."_".$wikiproject."_articles";
+                $theclass = $class."_".$wikiproject."_articles";
                 $sql = "UPDATE $user_table a
-                        LEFT JOIN categorylinks cl
-                        ON a.pageid = cl.cl_from
-                        SET a.importance = '".str_replace("-Class","",$class)."'"."
-                        WHERE cl.cl_to = '".$theclass."'";
+                        SET a.quality = '".str_replace("-Class","",$class)."'"."
+			WHERE a.talkid IN
+			  (SELECT cl.cl_from
+			   FROM categorylinks cl
+                           WHERE cl.cl_to = '".$theclass."')";
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." quality class: ". mysql_error());
  
             //lowercase
-                            $sql = "UPDATE $user_table a
-                        LEFT JOIN categorylinks cl
-                        ON a.pageid = cl.cl_from
-                        SET a.importance = '".str_replace("-Class","",$class)."'"."
-                        WHERE cl.cl_to = '".strtolower($theclass)."'";
+                $theclass = $class."_".strtolower($wikiproject)."_articles";
+                $sql = "UPDATE $user_table a
+                        SET a.quality = '".str_replace("-Class","",$class)."'"."
+			WHERE a.talkid IN
+			  (SELECT cl.cl_from
+			   FROM categorylinks cl
+                           WHERE cl.cl_to = '".$theclass."')";
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." quality class: ". mysql_error());
  
@@ -119,19 +133,19 @@
                 {
                     foreach($months as $month)
                     {
-                        $thecountercat =  $countercat." from ".$month." ".$startyear;
+                        $thecountercat = str_replace(' ', '_', $countercat." from ".$month." ".$year);
  
                         //update main table
                         $sql = "UPDATE $user_table a
-                                LEFT JOIN categorylinks cl
-                                ON a.pageid = cl.cl_from
-                                SET a.categories = concat(categories, '".$countercat." (".$month." ".$year.")',
+                                SET a.categories = concat(categories, '".$countercat." (".$month." ".$year.")'),
                                     a.catnumber = a.catnumber + 1
-                                WHERE cl.cl_to = '".$thecountercat."'";
+			        WHERE a.articleid IN
+			          (SELECT cl.cl_from
+			           FROM categorylinks cl
+                                   WHERE cl.cl_to = '".$thecountercat."')";
+                        mysql_query($sql,$con)
+                                or die('Could not load category '.$thecountercat.'for WikiProject '.$wikiproject.": ". mysql_error());
  
-                        echo $countercat." ".$month." ".$year." -".$wikiproject;
-                        echo "<br>";
-                        flush();
                     }//month
                 }//year
             }//countercat
