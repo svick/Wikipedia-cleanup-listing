@@ -57,6 +57,7 @@
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." articles: ". mysql_error());
  
+            echo "Processing importances;"
  
             //Set importance
             foreach($importances as $importance)
@@ -81,6 +82,8 @@
                 mysql_query($sql,$con)
                         or die('Could not load WikiProject '.$wikiproject." importance: ". mysql_error());
             }
+ 
+            echo "Processing classes;"
  
             //Set Class
             foreach($classes as $class)
@@ -108,6 +111,8 @@
  
             foreach($cleanupcountercats as $countercat)
             {
+ 
+            echo "Processing $countercat;"
  
                 //to do create table for each cat
  
