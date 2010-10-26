@@ -14,23 +14,23 @@
         $wikiprojects = array("Equine");//, "Films", "Food and drink");
  
  
-        //login
-        $con = mysql_connect("localhost","root","",true) //true?
-                or die('Could not connect: ' . mysql_error());
+        $ts_pw = posix_getpwuid(posix_getuid());
+        $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
+        $db = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password']);
+                or die('Could not connect: ' . mysql_error()); 
+        unset($ts_mycnf);
+        unset($ts_pw);
  
-        //create db
-        mysql_query("CREATE DATABASE IF NOT EXISTS enwiki2",$con)
-                or die('Could not create db: ' . mysql_error());
- 
-        mysql_select_db("enwiki2", $con)
+        mysql_select_db('enwiki_p', $db);
                 or die('Could not select db: ' . mysql_error());
  
+        $user_table = "u_${ts_mycnf['user']}.articles";
  
         //foreach as opposed to while for legibility
         foreach($wikiprojects as $wikiproject)
         {
             //Create temporary table
-            $sql = "CREATE TABLE articles8(
+            $sql = "CREATE TABLE $user_table(
                         pageid INT(8) UNSIGNED,
                         article VARCHAR(255),
                         importance VARCHAR(7),
@@ -39,13 +39,13 @@
                         taskforce VARCHAR(255),
                         categories TEXT NOT NULL
                     )";
-            mysql_query($sql,$con)
+            mysql_query($sql,$db)
                     or die('Could not create table: ' . mysql_error());
  
             //Load articles and pageid from WikiProject
             $categoryarticles = "'WikiProject_".$wikiproject."_articles'";
             $sql = "
-                INSERT INTO articles
+                INSERT INTO $user_table
                 (
                     pageid,
                     article
@@ -64,7 +64,7 @@
                 //try both upper and lower
                 $theimportance = $importance."-importance_".$wikiproject."_articles";
                 //http://www.electrictoolbox.com/article/mysql/cross-table-update/
-                $sql = "UPDATE articles a
+                $sql = "UPDATE $user_table a
                         LEFT JOIN categorylinks cl
                         ON a.pageid = cl.cl_from
                         SET a.importance = '".$importance."'"."
@@ -73,7 +73,7 @@
                         or die('Could not load WikiProject '.$wikiproject." importance: ". mysql_error());
  
                     //lowercase
-                $sql = "UPDATE articles a
+                $sql = "UPDATE $user_table a
                         LEFT JOIN categorylinks cl
                         ON a.pageid = cl.cl_from
                         SET a.importance = '".$importance."'"."
@@ -87,7 +87,7 @@
             {
                                 //try both upper and lower - to do
                $theclass = $class."_".$wikiproject."_articles";
-                $sql = "UPDATE articles a
+                $sql = "UPDATE $user_table a
                         LEFT JOIN categorylinks cl
                         ON a.pageid = cl.cl_from
                         SET a.importance = '".str_replace("-Class","",$class)."'"."
@@ -96,7 +96,7 @@
                     or die('Could not load WikiProject '.$wikiproject." quality class: ". mysql_error());
  
             //lowercase
-                            $sql = "UPDATE articles a
+                            $sql = "UPDATE $user_table a
                         LEFT JOIN categorylinks cl
                         ON a.pageid = cl.cl_from
                         SET a.importance = '".str_replace("-Class","",$class)."'"."
@@ -118,7 +118,7 @@
                         $thecountercat =  $countercat." from ".$month." ".$startyear;
  
                         //update main table
-                        $sql = "UPDATE articles a
+                        $sql = "UPDATE $user_table a
                                 LEFT JOIN categorylinks cl
                                 ON a.pageid = cl.cl_from
                                 SET a.categories = concat(categories, '".$countercat." (".$month." ".$year.")',
