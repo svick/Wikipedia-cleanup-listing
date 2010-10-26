@@ -19,8 +19,7 @@
         $con = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password'])
                 or die('Could not connect: ' . mysql_error()); 
         $user_table = "u_${ts_mycnf['user']}.articles";
-        unset($ts_mycnf);
-        unset($ts_pw);
+        unset($ts_mycnf, $ts_pw);
  
         mysql_select_db('enwiki_p', $con)
                 or die('Could not select db: ' . mysql_error());
