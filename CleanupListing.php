@@ -16,12 +16,12 @@
  
         $ts_pw = posix_getpwuid(posix_getuid());
         $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
-        $con = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password']);
+        $con = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password'])
                 or die('Could not connect: ' . mysql_error()); 
         unset($ts_mycnf);
         unset($ts_pw);
  
-        mysql_select_db('enwiki_p', $con);
+        mysql_select_db('enwiki_p', $con)
                 or die('Could not select db: ' . mysql_error());
  
         $user_table = "u_${ts_mycnf['user']}.articles";
@@ -57,7 +57,7 @@
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." articles: ". mysql_error());
  
-            echo "Processing importances;"
+            echo "Processing importances";
  
             //Set importance
             foreach($importances as $importance)
@@ -83,7 +83,7 @@
                         or die('Could not load WikiProject '.$wikiproject." importance: ". mysql_error());
             }
  
-            echo "Processing classes;"
+            echo "Processing classes";
  
             //Set Class
             foreach($classes as $class)
@@ -112,7 +112,7 @@
             foreach($cleanupcountercats as $countercat)
             {
  
-            echo "Processing $countercat;"
+            echo "Processing $countercat";
  
                 //to do create table for each cat
  
