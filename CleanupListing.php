@@ -67,7 +67,7 @@
                     FOREIGN KEY (article_id) REFERENCES articles(id)
                 )";
         mysql_query($sql,$con)
-                or die('Counld not create categories table: ' . mysql_error());
+                or die('Could not create categories table: ' . mysql_error());
 
         $sql = "INSERT INTO $user_db.runs () VALUE ()";
         mysql_query($sql,$con)
@@ -188,7 +188,4 @@
         //close connection
         mysql_close($con)
                 or die('Could not close connection to db: ' . mysql_error());
-
- //print out to Wikipedia
-
 ?>
