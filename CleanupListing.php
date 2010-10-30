@@ -174,10 +174,21 @@
             }//countercat
         }//wikiproject
 
+        echo "Deleting \"clean\" articles.\n";
+
+        //delete "clean" articles
+        $sql = "DELETE FROM $user_db.articles
+                WHERE run_id = $run_id
+                AND id NOT IN (
+                    SELECT article_id
+                    FROM categories)";
+        mysql_query($sql,$con)
+                or die ('Could not delete "clean" articles: '. mysql_error());
+
         //close connection
-            mysql_close($con)
-                    or die('Could not close connection to db: ' . mysql_error());
+        mysql_close($con)
+                or die('Could not close connection to db: ' . mysql_error());
 
  //print out to Wikipedia
 
-        ?>
+?>
