@@ -44,14 +44,13 @@
                 or die('Could not create runs table: ' . mysql_error());
 
         $sql = "CREATE TABLE IF NOT EXISTS $user_db.articles(
+                    id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
                     articleid INT(8) UNSIGNED,
                     talkid INT(8) UNSIGNED,
                     article VARCHAR(255),
                     importance VARCHAR(7),
                     quality VARCHAR(5),
-                    catnumber TINYINT UNSIGNED NOT NULL DEFAULT 0,
                     taskforce VARCHAR(255),
-                    categories TEXT NOT NULL,
                     project_id INT(8) UNSIGNED,
                     run_id INT(8) UNSIGNED,
                     FOREIGN KEY (project_id) REFERENCES projects(id),
@@ -59,6 +58,16 @@
                 )";
         mysql_query($sql,$con)
                 or die('Could not create articles table: ' . mysql_error());
+
+        $sql = "CREATE TABLE IF NOT EXISTS $user_db.categories(
+                    name VARCHAR(255) NOT NULL,
+                    month VARCHAR(10) NOT NULL,
+                    year YEAR NOT NULL,
+                    article_id INT(8) UNSIGNED NOT NULL,
+                    FOREIGN KEY (article_id) REFERENCES articles(id)
+                )";
+        mysql_query($sql,$con)
+                or die('Counld not create categories table: ' . mysql_error());
 
         $sql = "INSERT INTO $user_db.runs () VALUE ()";
         mysql_query($sql,$con)
@@ -143,24 +152,20 @@
 
                 echo "Processing $countercat\n";
 
-                //to do create table for each cat
-
                 foreach($years as $year)
                 {
                     foreach($months as $month)
                     {
                         $thecountercat = str_replace(' ', '_', "$countercat from $month $year");
 
-                        //update main table
-                        $sql = "UPDATE $user_db.articles a
-                                SET a.categories = concat(categories, '$countercat ($month $year)'),
-                                    a.catnumber = a.catnumber + 1
+                        //insert into categories table
+                        $sql = "INSERT INTO $user_db.categories (name, month, year, article_id)
+                                SELECT '$countercat', '$month', $year, a.id
+                                FROM $user_db.articles a
+                                JOIN categorylinks cl ON cl.cl_from = a.articleid
                                 WHERE a.project_id = $project_id
                                 AND a.run_id = $run_id
-                                AND a.articleid IN
-                                  (SELECT cl.cl_from
-                                   FROM categorylinks cl
-                                   WHERE cl.cl_to = '$thecountercat')";
+                                AND cl.cl_to = '$thecountercat'";
                         mysql_query($sql,$con)
                                 or die("Could not load category $thecountercat for WikiProject $project_name: ". mysql_error());
 
