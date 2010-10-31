@@ -47,7 +47,11 @@
         while($section = mysql_fetch_assoc($sections))
         {
             $table_writer->WriteSection($section['name']);
-            $table_writer->WriteTableHeader(array('Article', 'Importance', 'Class', 'Categories'));
+            $table_writer->WriteTableHeader(array(
+                    new Column('Article'),
+                    new Column('Importance'),
+                    new Column('Class'),
+                    new Column('Categories')));
 
             $sql = "SELECT DISTINCT id, article, importance, quality
                     FROM articles
@@ -77,7 +81,7 @@
                   $article['importance'],
                   $article['quality'],
                   implode(', ', $categories)
-		));
+                ));
         
             }
 

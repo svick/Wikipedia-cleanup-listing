@@ -36,12 +36,26 @@
         $table_writer = TableWriterFactory::Create($_GET['format']);
         $table_writer->WriteHeader("Cleanup listing for WikiProject $project_name");
         $table_writer->WriteText("This is a cleanup listing for <a href=\"http://en.wikipedia.org/wiki/Wikipedia:WikiProject_$project_name\">WikiProject $project_name</a> generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
-        $table_writer->WriteTableHeader(array('Article', 'Importance', 'Class', 'Count', 'Categories'));
+        $table_writer->WriteTableHeader(array(
+                new Column('Article', true),
+                new Column('Importance'),
+                new Column('Class'),
+                new Column('Count', true),
+                new Column('Categories')));
+
+        $sort = $_GET['sort'];
+        if ($sort)
+                $sort = strtolower($sort);
+        else
+                $sort = 'article';
+
+        if ($sort == 'count')
+                $sort = "$sort DESC";
 
         $sql = "SELECT id, article, importance, quality, (SELECT COUNT(*) FROM categories WHERE articles.id = categories.article_id) AS count
                 FROM articles
                 WHERE run_id = $run_id
-                ORDER BY article";
+                ORDER BY $sort";
         $articles = mysql_query($sql,$con)
           or die('Could not load articles: ' . mysql_error());
 

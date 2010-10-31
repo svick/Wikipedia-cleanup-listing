@@ -6,7 +6,7 @@ class HtmlTableWriter implements ITableWriter
 {
   public function WriteHeader($title)
   {
-	  header('Content-Type: text/html; charset=UTF-8');
+    header('Content-Type: text/html; charset=UTF-8');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -44,8 +44,20 @@ class HtmlTableWriter implements ITableWriter
 <?
     foreach ($columns as $column)
     {
+      if ($column->Sortable)
+      {
+        $params = $_GET;
+        $params['sort'] = $column->Name;
+        $params2 = array();
+        foreach($params as $key => $value)
+        	$params2[] = "$key=$value";
+        $url = $_SERVER['PHP_SELF'] . '?' . implode('&', $params2);
+        $column_string = $this->FormatLink($url, $column->Name);
+      }
+      else
+        $column_string = $column->Name;
 ?>
-        <th><?= $column ?></th>
+        <th><?= $column_string ?></th>
 <?
     }
 ?>

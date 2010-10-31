@@ -13,4 +13,21 @@ interface ITableWriter
   public function FormatLink($url, $text);
 }
 
+class Column
+{
+  public $Name;
+  public $Sortable;
+
+  function __construct($name, $sortable = false)
+  {
+    $this->Name = $name;
+    $this->Sortable = $sortable;
+  }
+
+  function __tostring()
+  {
+    return $this->Name;
+  }
+}
+
 ?>
