@@ -181,7 +181,7 @@
                 WHERE run_id = $run_id
                 AND id NOT IN (
                     SELECT article_id
-                    FROM categories)";
+                    FROM $user_db.categories)";
         mysql_query($sql,$con)
                 or die ('Could not delete "clean" articles: '. mysql_error());
 
