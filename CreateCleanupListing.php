@@ -107,6 +107,43 @@
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." articles: ". mysql_error());
 
+            foreach($cleanupcountercats as $countercat)
+            {
+                echo "Processing $countercat\n";
+
+                foreach($years as $year)
+                {
+                    foreach($months as $month)
+                    {
+                        $month_name = date('F', mktime(0, 0, 0, $month, 1));
+                        $thecountercat = str_replace(' ', '_', "$countercat from $month_name $year");
+
+                        //insert into categories table
+                        $sql = "INSERT INTO $user_db.categories (name, month, year, article_id)
+                                SELECT '$countercat', '$month', $year, a.id
+                                FROM $user_db.articles a
+                                JOIN categorylinks cl ON cl.cl_from = a.articleid
+                                WHERE a.project_id = $project_id
+                                AND a.run_id = $run_id
+                                AND cl.cl_to = '$thecountercat'";
+                        mysql_query($sql,$con)
+                                or die("Could not load category $thecountercat for WikiProject $project_name: ". mysql_error());
+                    }//month
+                }//year
+            }//countercat
+
+            echo "Deleting \"clean\" articles.\n";
+
+            //delete "clean" articles
+            $sql = "DELETE FROM $user_db.articles
+                    WHERE run_id = $run_id
+		    AND project_id = $project_id
+                    AND id NOT IN (
+                        SELECT article_id
+                        FROM $user_db.categories)";
+            mysql_query($sql,$con)
+                    or die ('Could not delete "clean" articles: '. mysql_error());
+
             $project_part = $lowercase_cats ? strtolower($project_name) : $project_name;
 
             echo "Processing importances\n";
@@ -149,45 +186,7 @@
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." quality class: ". mysql_error());
             }
-
-            foreach($cleanupcountercats as $countercat)
-            {
-
-                echo "Processing $countercat\n";
-
-                foreach($years as $year)
-                {
-                    foreach($months as $month)
-                    {
-                        $month_name = date('F', mktime(0, 0, 0, $month, 1));
-                        $thecountercat = str_replace(' ', '_', "$countercat from $month_name $year");
-
-                        //insert into categories table
-                        $sql = "INSERT INTO $user_db.categories (name, month, year, article_id)
-                                SELECT '$countercat', '$month', $year, a.id
-                                FROM $user_db.articles a
-                                JOIN categorylinks cl ON cl.cl_from = a.articleid
-                                WHERE a.project_id = $project_id
-                                AND a.run_id = $run_id
-                                AND cl.cl_to = '$thecountercat'";
-                        mysql_query($sql,$con)
-                                or die("Could not load category $thecountercat for WikiProject $project_name: ". mysql_error());
-
-                    }//month
-                }//year
-            }//countercat
         }//wikiproject
-
-        echo "Deleting \"clean\" articles.\n";
-
-        //delete "clean" articles
-        $sql = "DELETE FROM $user_db.articles
-                WHERE run_id = $run_id
-                AND id NOT IN (
-                    SELECT article_id
-                    FROM $user_db.categories)";
-        mysql_query($sql,$con)
-                or die ('Could not delete "clean" articles: '. mysql_error());
 
         //close connection
         mysql_close($con)
