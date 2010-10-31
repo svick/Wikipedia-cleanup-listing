@@ -29,6 +29,9 @@ class HtmlTableWriter implements ITableWriter
 
   public function WriteSection($name)
   {
+?>
+    <h2><?= $name ?></h2>
+<?
   }
 
   public function WriteTableHeader($columns)

@@ -4,6 +4,8 @@
 //Version .1
 //For Cleanup Listing
 
+        require_once 'HtmlTableWriter.php';
+
         $ts_pw = posix_getpwuid(posix_getuid());
         $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
         $con = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password'])
@@ -30,18 +32,11 @@
         $sql = "SELECT id FROM projects WHERE name = $project";
         $project = mysql_fetch_assoc(mysql_query($sql,$con));
         $project_id = $project['id'];
-?>
-<html>
-  <head>
-    <title>Cleanup listing for WikiProject <?= $project_name ?></title>
-  </head>
-  <style>
-    td, th { border: 1px solid black }
-    table { border-collapse: collapse }
-  </style>
-  <body>
-    <p>This is a cleanup listing for <a href="http://en.wikipedia.org/wiki/Wikipedia:WikiProject_<?= $project_name ?>">WikiProject <?= $project_name ?></a> generated on <?= date('j F Y, G:i:s e', strtotime($run_time)) ?>.</p>
-<?
+
+        $table_writer = new HtmlTableWriter();
+        $table_writer->WriteHeader("Cleanup listing for WikiProject $project_name");
+        $table_writer->WriteText("This is a cleanup listing for <a href=\"http://en.wikipedia.org/wiki/Wikipedia:WikiProject_$project_name\">WikiProject $project_name</a> generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
+
         $sql = "SELECT DISTINCT categories.name AS name
                 FROM categories
                 JOIN articles on categories.article_id = articles.id
@@ -51,16 +46,9 @@
 
         while($section = mysql_fetch_assoc($sections))
         {
-?>
-    <h2><?= $section['name'] ?></h2>
-    <table>
-      <tr>
-        <th>Article</th>
-        <th>Importance</th>
-        <th>Class</th>
-        <th>Categories</th>
-      </tr>
-<?
+            $table_writer->WriteSection($section['name']);
+            $table_writer->WriteTableHeader(array('Article', 'Importance', 'Class', 'Categories'));
+
             $sql = "SELECT DISTINCT id, article, importance, quality
                     FROM articles
                     JOIN categories ON articles.id = categories.article_id
@@ -72,36 +60,29 @@
 
             while ($article = mysql_fetch_assoc($articles))
             {
-?>
-      <tr>
-        <td><a href='http://en.wikipedia.org/wiki/<?= $article['article'] ?>'><?= str_replace('_', ' ', $article['article']) ?></a></td>
-        <td><?= $article['importance'] ?></td>
-        <td><?= $article['quality'] ?></td>
-        <td>
-<?
                 $sql = "SELECT name, month, year
                         FROM categories
                         WHERE article_id = {$article['id']}";
-                $categories = mysql_query($sql,$con)
+                $category_rows = mysql_query($sql,$con)
                   or die('Could not load categories: ' . mysql_error());
-                $first = true;
-                while ($category = mysql_fetch_assoc($categories))
+                $categories = array();
+                while ($category = mysql_fetch_assoc($category_rows))
                 {
                   $month_name = date('F', mktime(0, 0, 0, $category['month'], 1));
-                  if (!$first)
-                    echo ', ';
-                  echo "{$category['name']} ($month_name {$category['year']})";
-                  $first = false;
+                  $categories[] = "{$category['name']} ($month_name {$category['year']})";
                 }
-?>
-        </td>
-      </tr>
-<?
+
+                $table_writer->WriteRow(array(
+                  $table_writer->FormatLink("http://en.wikipedia.org/wiki/{$article['article']}", str_replace('_', ' ', $article['article'])),
+                  $article['importance'],
+                  $article['quality'],
+                  implode(', ', $categories)
+		));
+        
             }
-?>
-    </table>
-<?
+
+            $table_writer->WriteTableFooter();
         }
+
+    $table_writer->WriteFooter();
 ?>
-  </body>
-</html>
