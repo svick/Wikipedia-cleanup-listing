@@ -4,7 +4,7 @@
 //Version .1
 //For Cleanup Listing
 
-	include_once 'HtmlTableWriter.php';
+        require_once 'HtmlTableWriter.php';
 
         $ts_pw = posix_getpwuid(posix_getuid());
         $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
@@ -33,18 +33,11 @@
         $project = mysql_fetch_assoc(mysql_query($sql,$con));
         $project_id = $project['id'];
 
-	$table_writer = new HtmlTableWriter();
-	$table_writer->WriteHeader("Cleanup listing for WikiProject $project_name");
-?>
-    <p>This is a cleanup listing for <a href="http://en.wikipedia.org/wiki/Wikipedia:WikiProject_<?= $project_name ?>">WikiProject <?= $project_name ?></a> generated on <?= date('j F Y, G:i:s e', strtotime($run_time)) ?>.</p>
-    <table>
-      <tr>
-        <th>Article</th>
-        <th>Importance</th>
-        <th>Class</th>
-        <th>Categories</th>
-      </tr>
-<?
+        $table_writer = new HtmlTableWriter();
+        $table_writer->WriteHeader("Cleanup listing for WikiProject $project_name");
+        $table_writer->WriteText("This is a cleanup listing for <a href=\"http://en.wikipedia.org/wiki/Wikipedia:WikiProject_$project_name\">WikiProject $project_name</a> generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
+        $table_writer->WriteTableHeader(array('Article', 'Importance', 'Class', 'Categories'));
+
         $sql = "SELECT id, article, importance, quality
                 FROM articles
                 WHERE run_id = $run_id
@@ -54,33 +47,26 @@
 
         while ($article = mysql_fetch_assoc($articles))
         {
-?>
-      <tr>
-        <td><a href='http://en.wikipedia.org/wiki/<?= $article['article'] ?>'><?= str_replace('_', ' ', $article['article']) ?></a></td>
-        <td><?= $article['importance'] ?></td>
-        <td><?= $article['quality'] ?></td>
-        <td>
-<?
             $sql = "SELECT name, month, year
                     FROM categories
                     WHERE article_id = {$article['id']}";
-            $categories = mysql_query($sql,$con)
+            $category_rows = mysql_query($sql,$con)
               or die('Could not load categories: ' . mysql_error());
-	    $first = true;
-	    while ($category = mysql_fetch_assoc($categories))
-	    {
-	      $month_name = date('F', mktime(0, 0, 0, $category['month'], 1));
-	      if (!$first)
-		echo ', ';
-              echo "{$category['name']} ($month_name {$category['year']})";
-	      $first = false;
-	    }
-?>
-        </td>
-      </tr>
-<?
+            $categories = array();
+            while ($category = mysql_fetch_assoc($category_rows))
+            {
+              $month_name = date('F', mktime(0, 0, 0, $category['month'], 1));
+              $categories[] = "{$category['name']} ($month_name {$category['year']})";
+            }
+
+            $table_writer->WriteRow(array(
+              $table_writer->FormatLink("http://en.wikipedia.org/wiki/{$article['article']}", str_replace('_', ' ', $article['article'])),
+              $article['importance'],
+              $article['quality'],
+              implode(', ', $categories)
+            ));
         }
+
+        $table_writer->WriteTableFooter();
+        $table_writer->WriteFooter();
 ?>
-    </table>
-  </body>
-</html>
