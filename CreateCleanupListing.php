@@ -39,13 +39,16 @@
         mysql_query($sql,$con)
                 or die('Could not create runs table: ' . mysql_error());
 
+	$classes_string = "'" . implode("', '", $classes) . "'";
+	$importances_string = "'" . implode("', '", $importances) . "'";
+
         $sql = "CREATE TABLE IF NOT EXISTS $user_db.articles(
                     id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
                     articleid INT(8) UNSIGNED,
                     talkid INT(8) UNSIGNED,
                     article VARCHAR(255),
-                    importance VARCHAR(7),
-                    quality VARCHAR(5),
+                    importance ENUM($importances_string),
+                    quality ENUM($classes_string),
                     taskforce VARCHAR(255),
                     project_id INT(8) UNSIGNED,
                     run_id INT(8) UNSIGNED,
@@ -130,15 +133,19 @@
             //Set Class
             foreach($classes as $class)
             {
-                $theclass = "${class}_${project_part}_articles";
+		if ($class == 'Unassessed')
+                  $theclass = "${class}_${project_part}_articles";
+		else
+                  $theclass = "${class}-Class_${project_part}_articles";
+
                 $sql = "UPDATE $user_db.articles a
-                        SET a.quality = '".str_replace("-Class","",$class)."'"."
+                        SET a.quality = '$class'
                         WHERE a.project_id = $project_id
                         AND a.run_id = $run_id
                         AND a.talkid IN
                           (SELECT cl.cl_from
                            FROM categorylinks cl
-                           WHERE cl.cl_to = '".$theclass."')";
+                           WHERE cl.cl_to = '$theclass')";
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." quality class: ". mysql_error());
             }
