@@ -11,6 +11,7 @@ interface ITableWriter
   public function WriteFooter();
 
   public function FormatLink($url, $text);
+  public function FormatWikiLink($page, $text);
 }
 
 class Column

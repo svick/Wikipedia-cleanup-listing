@@ -16,6 +16,7 @@ class HtmlTableWriter implements ITableWriter
     <style type="text/css">
       td, th { border: 1px solid black }
       table { border-collapse: collapse }
+      #footer { text-align: center }
     </style>
   </head>
   <body>
@@ -50,7 +51,7 @@ class HtmlTableWriter implements ITableWriter
         $params['sort'] = $column->Name;
         $params2 = array();
         foreach($params as $key => $value)
-        	$params2[] = "$key=$value";
+          $params2[] = "$key=$value";
         $url = $_SERVER['PHP_SELF'] . '?' . implode('&', $params2);
         $column_string = $this->FormatLink($url, $column->Name);
       }
@@ -91,6 +92,11 @@ class HtmlTableWriter implements ITableWriter
   public function WriteFooter()
   {
 ?>
+    <div id="footer">
+      Authors:
+      <?= $this->FormatWikiLink('User:Svick', 'Svick') ?>,
+      <?= $this->FormatWikiLink('User:Smallman12q', 'Smallman12q') ?>
+    </div>
   </body>
 </html>
 <?
@@ -99,6 +105,13 @@ class HtmlTableWriter implements ITableWriter
   public function FormatLink($url, $text)
   {
     return '<a href="' . htmlspecialchars($url) . '">' . htmlspecialchars($text) . '</a>';
+  }
+
+  public function FormatWikiLink($page, $text = null)
+  {
+    if ($text == null)
+      $text = $page;
+    return $this->FormatLink("http://en.wikipedia.org/wiki/$page", $text);
   }
 }
 

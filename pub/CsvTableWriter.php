@@ -40,6 +40,13 @@ class CsvTableWriter implements ITableWriter
   {
     return $text;
   }
+
+  public function FormatWikiLink($page, $text = null)
+  {
+    if ($text == null)
+      $text = $page;
+    return $text;
+  }
 }
 
 ?>
