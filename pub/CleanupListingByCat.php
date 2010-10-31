@@ -53,7 +53,7 @@
                     new Column('Class'),
                     new Column('Categories')));
 
-            $sql = "SELECT DISTINCT id, article, importance, quality
+            $sql = "SELECT DISTINCT id, article, importance, class
                     FROM articles
                     JOIN categories ON articles.id = categories.article_id
                     WHERE run_id = $run_id
@@ -79,7 +79,7 @@
                 $table_writer->WriteRow(array(
                   $table_writer->FormatLink("http://en.wikipedia.org/wiki/{$article['article']}", str_replace('_', ' ', $article['article'])),
                   $article['importance'],
-                  $article['quality'],
+                  $article['class'],
                   implode(', ', $categories)
                 ));
         

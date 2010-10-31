@@ -38,8 +38,8 @@
         $table_writer->WriteText("This is a cleanup listing for <a href=\"http://en.wikipedia.org/wiki/Wikipedia:WikiProject_$project_name\">WikiProject $project_name</a> generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
         $table_writer->WriteTableHeader(array(
                 new Column('Article', true),
-                new Column('Importance'),
-                new Column('Class'),
+                new Column('Importance', true),
+                new Column('Class', true),
                 new Column('Count', true),
                 new Column('Categories')));
 
@@ -52,7 +52,7 @@
         if ($sort == 'count')
                 $sort = "$sort DESC";
 
-        $sql = "SELECT id, article, importance, quality, (SELECT COUNT(*) FROM categories WHERE articles.id = categories.article_id) AS count
+        $sql = "SELECT id, article, importance, class, (SELECT COUNT(*) FROM categories WHERE articles.id = categories.article_id) AS count
                 FROM articles
                 WHERE run_id = $run_id
                 ORDER BY $sort";
@@ -76,7 +76,7 @@
             $table_writer->WriteRow(array(
               $table_writer->FormatLink("http://en.wikipedia.org/wiki/{$article['article']}", str_replace('_', ' ', $article['article'])),
               $article['importance'],
-              $article['quality'],
+              $article['class'],
               $article['count'],
               implode(', ', $categories)
             ));

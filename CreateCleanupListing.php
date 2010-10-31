@@ -48,7 +48,7 @@
                     talkid INT(8) UNSIGNED,
                     article VARCHAR(255),
                     importance ENUM($importances_string),
-                    quality ENUM($classes_string),
+                    class ENUM($classes_string),
                     taskforce VARCHAR(255),
                     project_id INT(8) UNSIGNED,
                     run_id INT(8) UNSIGNED,
@@ -139,7 +139,7 @@
                   $theclass = "${class}-Class_${project_part}_articles";
 
                 $sql = "UPDATE $user_db.articles a
-                        SET a.quality = '$class'
+                        SET a.class = '$class'
                         WHERE a.project_id = $project_id
                         AND a.run_id = $run_id
                         AND a.talkid IN
