@@ -4,7 +4,7 @@
 //Version .1
 //For Cleanup Listing
 
-        require_once 'HtmlTableWriter.php';
+        require_once 'TableWriterFactory.php';
 
         $ts_pw = posix_getpwuid(posix_getuid());
         $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
@@ -33,7 +33,7 @@
         $project = mysql_fetch_assoc(mysql_query($sql,$con));
         $project_id = $project['id'];
 
-        $table_writer = new HtmlTableWriter();
+        $table_writer = TableWriterFactory::Create($_GET['format']);
         $table_writer->WriteHeader("Cleanup listing for WikiProject $project_name");
         $table_writer->WriteText("This is a cleanup listing for <a href=\"http://en.wikipedia.org/wiki/Wikipedia:WikiProject_$project_name\">WikiProject $project_name</a> generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
         $table_writer->WriteTableHeader(array('Article', 'Importance', 'Class', 'Categories'));
