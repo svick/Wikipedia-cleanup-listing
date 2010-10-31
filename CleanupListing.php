@@ -4,6 +4,8 @@
 //Version .1
 //For Cleanup Listing
 
+	include_once 'HtmlTableWriter.php';
+
         $ts_pw = posix_getpwuid(posix_getuid());
         $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
         $con = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password'])
@@ -30,16 +32,10 @@
         $sql = "SELECT id FROM projects WHERE name = $project";
         $project = mysql_fetch_assoc(mysql_query($sql,$con));
         $project_id = $project['id'];
+
+	$table_writer = new HtmlTableWriter();
+	$table_writer.WriteHeader("Cleanup listing for WikiProject $project_name");
 ?>
-<html>
-  <head>
-    <title>Cleanup listing for WikiProject <?= $project_name ?></title>
-  </head>
-  <style>
-    td, th { border: 1px solid black }
-    table { border-collapse: collapse }
-  </style>
-  <body>
     <p>This is a cleanup listing for <a href="http://en.wikipedia.org/wiki/Wikipedia:WikiProject_<?= $project_name ?>">WikiProject <?= $project_name ?></a> generated on <?= date('j F Y, G:i:s e', strtotime($run_time)) ?>.</p>
     <table>
       <tr>
