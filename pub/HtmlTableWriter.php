@@ -4,7 +4,7 @@ include_once 'ITableWriter.php';
 
 class HtmlTableWriter
 {
-  public void WriteHeader($title)
+  public function WriteHeader($title)
   {
 ?>
 <html>
@@ -19,23 +19,23 @@ class HtmlTableWriter
 <?php
   }
 
-  public void WriteSection($name)
+  public function WriteSection($name)
   {
   }
 
-  public void WriteTableHeader($columns)
+  public function WriteTableHeader($columns)
   {
   }
 
-  public void WriteRow($cells)
+  public function WriteRow($cells)
   {
   }
 
-  public void WriteTableFooter()
+  public function WriteTableFooter()
   {
   }
 
-  public void WriteFooter()
+  public function WriteFooter()
   {
   }
 }

@@ -2,12 +2,12 @@
 
 interface ITableWriter
 {
-  public void WriteHeader($title);
-  public void WriteSection($name);
-  public void WriteTableHeader($columns);
-  public void WriteRow($cells);
-  public void WriteTableFooter();
-  public void WriteFooter();
+  public function WriteHeader($title);
+  public function WriteSection($name);
+  public function WriteTableHeader($columns);
+  public function WriteRow($cells);
+  public function WriteTableFooter();
+  public function WriteFooter();
 }
 
 ?>
