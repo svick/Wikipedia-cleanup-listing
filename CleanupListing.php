@@ -73,9 +73,10 @@
 	    $first = true;
 	    while ($category = mysql_fetch_assoc($categories))
 	    {
+	      $month_name = date('F', mktime(0, 0, 0, $category['month'], 1));
 	      if (!$first)
 		echo ', ';
-              echo "{$category['name']} ({$category['month']} {$category['year']})";
+              echo "{$category['name']} ($month_name {$category['year']})";
 	      $first = false;
 	    }
 ?>
