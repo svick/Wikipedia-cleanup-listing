@@ -34,7 +34,7 @@
         $project_id = $project['id'];
 
 	$table_writer = new HtmlTableWriter();
-	$table_writer.WriteHeader("Cleanup listing for WikiProject $project_name");
+	$table_writer->WriteHeader("Cleanup listing for WikiProject $project_name");
 ?>
     <p>This is a cleanup listing for <a href="http://en.wikipedia.org/wiki/Wikipedia:WikiProject_<?= $project_name ?>">WikiProject <?= $project_name ?></a> generated on <?= date('j F Y, G:i:s e', strtotime($run_time)) ?>.</p>
     <table>
