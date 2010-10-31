@@ -5,7 +5,9 @@ require_once 'ITableWriter.php';
 class CsvTableWriter implements ITableWriter
 {
   public function WriteHeader($title)
-  { }
+  {
+    header('Content-Type: text/plain; charset=UTF-8');
+  }
 
   public function WriteText($text)
   { }
