@@ -29,7 +29,9 @@ class CsvTableWriter implements ITableWriter
   }
 
   public function WriteTableFooter()
-  { }
+  {
+    echo "\n";
+  }
 
   public function WriteFooter()
   { }
