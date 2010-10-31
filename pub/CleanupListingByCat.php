@@ -51,9 +51,17 @@
                     new Column('Article'),
                     new Column('Importance'),
                     new Column('Class'),
+                    new Column('Month'),
                     new Column('Categories')));
 
-            $sql = "SELECT DISTINCT id, article, importance, class
+            $sql = "SELECT DISTINCT id, article, importance, class, (
+                        SELECT CONCAT(MONTHNAME(CONCAT(year, '-', month, '-01')), ' ', year)
+                        FROM categories AS c
+                        WHERE c.article_id = articles.id
+                        AND c.name = '{$section['name']}'
+                        ORDER BY year, month
+                        LIMIT 1
+                    ) AS month
                     FROM articles
                     JOIN categories ON articles.id = categories.article_id
                     WHERE run_id = $run_id
@@ -80,6 +88,7 @@
                   $table_writer->FormatLink("http://en.wikipedia.org/wiki/{$article['article']}", str_replace('_', ' ', $article['article'])),
                   $article['importance'],
                   $article['class'],
+                  $article['month'],
                   implode(', ', $categories)
                 ));
         
