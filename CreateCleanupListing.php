@@ -111,10 +111,17 @@
             {
                 echo "Processing $countercat\n";
 
-                foreach($years as $year)
+                for($year = 2004; $year <= $finalyear; $year +=1)
                 {
-                    foreach($months as $month)
+                    for($month = 1; $month <= 12; $month +=1)
                     {
+                        //after final month break
+                        if(year == $finalyear)
+                        {
+                            if($month > $finalmonth)
+                                break 1;
+                        }
+
                         $month_name = date('F', mktime(0, 0, 0, $month, 1));
                         $thecountercat = str_replace(' ', '_', "$countercat from $month_name $year");
 
