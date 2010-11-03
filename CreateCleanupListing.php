@@ -39,8 +39,8 @@
         mysql_query($sql,$con)
                 or die('Could not create runs table: ' . mysql_error());
 
-	$classes_string = "'" . implode("', '", $classes) . "'";
-	$importances_string = "'" . implode("', '", $importances) . "'";
+        $classes_string = "'" . implode("', '", $classes) . "'";
+        $importances_string = "'" . implode("', '", $importances) . "'";
 
         $sql = "CREATE TABLE IF NOT EXISTS $user_db.articles(
                     id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -82,6 +82,8 @@
 
         while ($project = mysql_fetch_assoc($projects))
         {
+            echo "Processing $project.\n";
+
             $project_id = $project['id'];
             $project_name = $project['name'];
             $lowercase_cats = $project['lowercase_cats'];
@@ -144,7 +146,7 @@
             //delete "clean" articles
             $sql = "DELETE FROM $user_db.articles
                     WHERE run_id = $run_id
-		    AND project_id = $project_id
+                    AND project_id = $project_id
                     AND id NOT IN (
                         SELECT article_id
                         FROM $user_db.categories)";
@@ -177,9 +179,9 @@
             //Set Class
             foreach($classes as $class)
             {
-		if ($class == 'Unassessed')
+                if ($class == 'Unassessed')
                   $theclass = "${class}_${project_part}_articles";
-		else
+                else
                   $theclass = "${class}-Class_${project_part}_articles";
 
                 $sql = "UPDATE $user_db.articles a
