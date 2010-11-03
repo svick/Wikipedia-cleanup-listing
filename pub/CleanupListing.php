@@ -18,7 +18,7 @@
         mysql_select_db($user_db, $con)
                 or die('Could not select db: ' . mysql_error());
 
-        $project_name = $_GET['project'];
+        $project_name = mysql_real_escape_string($_GET['project']);
 
         if ($project_name == null)
                 die('Project was not set.');
@@ -44,7 +44,7 @@
                 new Column('Count', true),
                 new Column('Categories')));
 
-        $sort = $_GET['sort'];
+        $sort = mysql_real_escape_string($_GET['sort']);
         if ($sort)
                 $sort = strtolower($sort);
         else
