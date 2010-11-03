@@ -4,6 +4,6 @@ $cleanupcountercats = array('Accuracy disputes', 'Articles lacking page referenc
 $finalmonth = 10;//October
 $finalyear = 2010;
 $classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed");
-$importances = array("Top", "High", "Mid", "Low", "Unknown");
+$importances = array("Top", "High", "Mid", "Low", "Unknown", "NA");
 
 ?>
