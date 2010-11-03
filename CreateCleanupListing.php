@@ -82,11 +82,11 @@
 
         while ($project = mysql_fetch_assoc($projects))
         {
-            echo "Processing $project.\n";
-
             $project_id = $project['id'];
             $project_name = $project['name'];
             $lowercase_cats = $project['lowercase_cats'];
+
+            echo "Processing WikiProject $project_name.\n";
 
             //Load articles and pageid from WikiProject
             $categoryarticles = "'WikiProject_${project_name}_articles'";
