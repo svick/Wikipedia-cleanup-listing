@@ -29,8 +29,9 @@
         $run_id = $run['id'];
         $run_time = $run['time'];
 
-        $sql = "SELECT id FROM projects WHERE name = $project";
-        $project = mysql_fetch_assoc(mysql_query($sql,$con));
+        $sql = "SELECT id FROM projects WHERE name = '$project_name'";
+        $project = mysql_fetch_assoc(mysql_query($sql,$con))
+                or die('Could not select project: ' . mysql_error());
         $project_id = $project['id'];
 
         $table_writer = TableWriterFactory::Create($_GET['format']);
@@ -55,6 +56,7 @@
         $sql = "SELECT id, article, importance, class, (SELECT COUNT(*) FROM categories WHERE articles.id = categories.article_id) AS count
                 FROM articles
                 WHERE run_id = $run_id
+                AND project_id = $project_id
                 ORDER BY $sort";
         $articles = mysql_query($sql,$con)
           or die('Could not load articles: ' . mysql_error());
