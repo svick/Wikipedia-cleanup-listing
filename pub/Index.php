@@ -30,7 +30,10 @@
 ?>
     <ul>
 <?
-        $sql = "SELECT name FROM projects WHERE active = 1";
+        $sql = "SELECT name
+                FROM projects
+                WHERE active = 1
+                ORDER BY name";
         $projects = mysql_query($sql,$con);
         while ($project = mysql_fetch_assoc($projects))
         {
