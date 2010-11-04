@@ -27,7 +27,7 @@
                     id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     active BOOL DEFAULT 1 NOT NULL,
-                    lowercase_cats BOOL NOT NULL
+                    cat_name VARCHAR(255) NULL
                 )";
         mysql_query($sql,$con)
                 or die('Could not create projects table: ' . mysql_error());
@@ -75,7 +75,7 @@
 
         $run_id = mysql_insert_id();
 
-        $sql = "SELECT id, name, lowercase_cats
+        $sql = "SELECT id, name, cat_name
                 FROM $user_db.projects
                 WHERE active = 1";
         $projects = mysql_query($sql,$con)
@@ -85,12 +85,12 @@
         {
             $project_id = $project['id'];
             $project_name = $project['name'];
-            $lowercase_cats = $project['lowercase_cats'];
+            $cat_name = $project['cat_name'] ?: $project['name'];
 
             echo "Processing WikiProject $project_name.\n";
 
             //Load articles and pageid from WikiProject
-            $categoryarticles = mysql_real_escape_string("${project_name}_articles_by_quality");
+            $categoryarticles = mysql_real_escape_string(ucfirst("${cat_name}_articles_by_quality"));
             $sql = "
                 INSERT INTO $user_db.articles
                 (
@@ -155,15 +155,13 @@
             mysql_query($sql,$con)
                     or die ('Could not delete "clean" articles: '. mysql_error());
 
-            $project_part = $lowercase_cats ? strtolower($project_name) : $project_name;
-
             echo "Processing importances\n";
 
             //Set importance
             foreach($importances as $importance)
             {
 
-                $theimportance = "${importance}-importance_${project_part}_articles";
+                $theimportance = "${importance}-importance_${cat_name}_articles";
                 $sql = "UPDATE $user_db.articles a
                         SET a.importance = '$importance'
                         WHERE a.project_id = $project_id
@@ -182,9 +180,9 @@
             foreach($classes as $class)
             {
                 if ($class == 'Unassessed')
-                  $theclass = "${class}_${project_part}_articles";
+                  $theclass = "${class}_${cat_name}_articles";
                 else
-                  $theclass = "${class}-Class_${project_part}_articles";
+                  $theclass = "${class}-Class_${cat_name}_articles";
 
                 $sql = "UPDATE $user_db.articles a
                         SET a.class = '$class'
