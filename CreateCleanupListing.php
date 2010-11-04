@@ -89,7 +89,7 @@
             echo "Processing WikiProject $project_name.\n";
 
             //Load articles and pageid from WikiProject
-            $categoryarticles = "'${project_name}_articles_by_quality'";
+            $categoryarticles = mysql_real_escape_string("${project_name}_articles_by_quality");
             $sql = "
                 INSERT INTO $user_db.articles
                 (
@@ -105,7 +105,7 @@
                 JOIN categorylinks AS cl1 ON talk.page_id = cl1.cl_from
                 JOIN page AS cat ON cl1.cl_to = cat.page_title
                 JOIN categorylinks AS cl2 ON cat.page_id = cl2.cl_from
-                WHERE cl2.cl_to = $categoryarticles
+                WHERE cl2.cl_to = '$categoryarticles'
                 AND article.page_namespace = 0
                 AND talk.page_namespace = 1
                 AND cat.page_namespace = 14";
