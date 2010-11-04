@@ -53,7 +53,8 @@
                     project_id INT(8) UNSIGNED,
                     run_id INT(8) UNSIGNED,
                     FOREIGN KEY (project_id) REFERENCES projects(id),
-                    FOREIGN KEY (run_id) REFERENCES runs(id)
+                    FOREIGN KEY (run_id) REFERENCES runs(id),
+                    INDEX (run_id, project_id)
                 )";
         mysql_query($sql,$con)
                 or die('Could not create articles table: ' . mysql_error());
