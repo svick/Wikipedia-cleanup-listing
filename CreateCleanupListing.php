@@ -114,8 +114,6 @@
 
             foreach($cleanupcountercats as $countercat)
             {
-                echo "Processing $countercat\n";
-
                 for($year = 2004; $year <= $finalyear; $year +=1)
                 {
                     for($month = 1; $month <= 12; $month +=1)
