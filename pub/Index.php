@@ -33,6 +33,11 @@
         $sql = "SELECT name
                 FROM projects
                 WHERE active = 1
+                AND (
+                  SELECT COUNT(*)
+                  FROM articles
+                  WHERE articles.project_id = projects.id
+                  AND articles.run_id = $run_id) > 0
                 ORDER BY name";
         $projects = mysql_query($sql,$con);
         while ($project = mysql_fetch_assoc($projects))
