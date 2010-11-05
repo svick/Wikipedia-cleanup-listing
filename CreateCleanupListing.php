@@ -90,7 +90,7 @@
             echo "Processing WikiProject $project_name.\n";
 
             //Load articles and pageid from WikiProject
-            $categoryarticles = mysql_real_escape_string(ucfirst("${cat_name}_articles_by_quality"));
+            $categoryarticles = mysql_real_escape_string("WikiProject_${cat_name}_articles");
             $sql = "
                 INSERT INTO $user_db.articles
                 (
@@ -103,15 +103,56 @@
                 SELECT article.page_id, talk.page_id, article.page_title, $project_id, $run_id
                 FROM page AS article
                 JOIN page AS talk ON article.page_title = talk.page_title
-                JOIN categorylinks AS cl1 ON talk.page_id = cl1.cl_from
-                JOIN page AS cat ON cl1.cl_to = cat.page_title
-                JOIN categorylinks AS cl2 ON cat.page_id = cl2.cl_from
-                WHERE cl2.cl_to = '$categoryarticles'
+                JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
+                WHERE cl.cl_to = '$categoryarticles'
                 AND article.page_namespace = 0
-                AND talk.page_namespace = 1
-                AND cat.page_namespace = 14";
+                AND talk.page_namespace = 1";
             mysql_query($sql,$con)
                     or die('Could not load WikiProject '.$wikiproject." articles: ". mysql_error());
+
+            $sql = "SELECT COUNT(*)
+                    FROM $user_db.articles
+                    WHERE project_id = $project_id
+                    AND run_id = $run_id";
+            $count = mysql_result(mysql_query($sql,$con), 0);
+
+            if ($count == 0)
+            {
+              $categoryarticles = mysql_real_escape_string(ucfirst("${cat_name}_articles_by_quality"));
+              $sql = "
+                  INSERT INTO $user_db.articles
+                  (
+                      articleid,
+                      talkid,
+                      article,
+                      project_id,
+                      run_id
+                  )
+                  SELECT article.page_id, talk.page_id, article.page_title, $project_id, $run_id
+                  FROM page AS article
+                  JOIN page AS talk ON article.page_title = talk.page_title
+                  JOIN categorylinks AS cl1 ON talk.page_id = cl1.cl_from
+                  JOIN page AS cat ON cl1.cl_to = cat.page_title
+                  JOIN categorylinks AS cl2 ON cat.page_id = cl2.cl_from
+                  WHERE cl2.cl_to = '$categoryarticles'
+                  AND article.page_namespace = 0
+                  AND talk.page_namespace = 1
+                  AND cat.page_namespace = 14";
+              mysql_query($sql,$con)
+                      or die('Could not load WikiProject '.$wikiproject." articles: ". mysql_error());
+
+              $sql = "SELECT COUNT(*)
+                      FROM $user_db.articles
+                      WHERE project_id = $project_id
+                      AND run_id = $run_id";
+              $count = mysql_result(mysql_query($sql,$con), 0);
+
+              if ($count == 0)
+              {
+                error_log("Could not get articles for WikiProject $project_name.");
+                continue;
+              }
+            }
 
             foreach($cleanupcountercats as $countercat)
             {
