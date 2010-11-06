@@ -156,32 +156,22 @@
 
             foreach($cleanupcountercats as $countercat)
             {
-                for($year = 2004; $year <= date('Y'); $year +=1)
-                {
-                    for($month = 1; $month <= 12; $month +=1)
-                    {
-                        //after final month break
-                        if($year == date('Y'))
-                        {
-                            if($month > date('n'))
-                                break 1;
-                        }
+                $thecountercat = str_replace(' ', '_', "$countercat from %");
 
-                        $month_name = date('F', mktime(0, 0, 0, $month, 1));
-                        $thecountercat = str_replace(' ', '_', "$countercat from $month_name $year");
-
-                        //insert into categories table
-                        $sql = "INSERT INTO $user_db.categories (name, month, year, article_id)
-                                SELECT '$countercat', '$month', $year, a.id
-                                FROM $user_db.articles a
-                                JOIN categorylinks cl ON cl.cl_from = a.articleid
-                                WHERE a.project_id = $project_id
-                                AND a.run_id = $run_id
-                                AND cl.cl_to = '$thecountercat'";
-                        mysql_query($sql,$con)
-                                or die("Could not load category $thecountercat for WikiProject $project_name: ". mysql_error());
-                    }//month
-                }//year
+                //insert into categories table
+                $sql = "INSERT INTO $user_db.categories (name, month, year, article_id)
+                        SELECT
+                          '$countercat',
+                          MONTH(STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(cl_to, '_', -2), '_', 1), '%M'),
+                          SUBSTRING_INDEX(cl_to, '_', -1),
+                          a.id
+                        FROM $user_db.articles a
+                        JOIN categorylinks cl ON cl.cl_from = a.articleid
+                        WHERE a.project_id = $project_id
+                        AND a.run_id = $run_id
+                        AND cl.cl_to LIKE '$thecountercat'";
+                mysql_query($sql,$con)
+                        or die("Could not load category $thecountercat for WikiProject $project_name: ". mysql_error());
             }//countercat
 
             echo "Deleting \"clean\" articles.\n";
