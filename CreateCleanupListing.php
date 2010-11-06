@@ -162,7 +162,7 @@
                 $sql = "INSERT INTO $user_db.categories (name, month, year, article_id)
                         SELECT
                           '$countercat',
-                          MONTH(STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(cl_to, '_', -2), '_', 1), '%M'),
+                          MONTH(STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(cl_to, '_', -2), '_', 1), '%M')),
                           SUBSTRING_INDEX(cl_to, '_', -1),
                           a.id
                         FROM $user_db.articles a
@@ -171,7 +171,7 @@
                         AND a.run_id = $run_id
                         AND cl.cl_to LIKE '$thecountercat'";
                 mysql_query($sql,$con)
-                        or die("Could not load category $thecountercat for WikiProject $project_name: ". mysql_error());
+                        or die("Could not load category $countercat for WikiProject $project_name: ". mysql_error());
             }//countercat
 
             //delete "clean" articles
