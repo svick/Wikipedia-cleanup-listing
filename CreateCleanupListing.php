@@ -156,14 +156,14 @@
 
             foreach($cleanupcountercats as $countercat)
             {
-                for($year = 2004; $year <= $finalyear; $year +=1)
+                for($year = 2004; $year <= date('Y'); $year +=1)
                 {
                     for($month = 1; $month <= 12; $month +=1)
                     {
                         //after final month break
-                        if(year == $finalyear)
+                        if($year == date('Y'))
                         {
-                            if($month > $finalmonth)
+                            if($month > date('n'))
                                 break 1;
                         }
 

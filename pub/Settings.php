@@ -76,8 +76,6 @@ $cleanupcountercats = array(
   'Wikipedia articles needing SmackBot clean up',
   'Wikipedia articles needing cleanup',
   'Articles needing the year an event occurred');
-$finalmonth = 10;//October
-$finalyear = 2010;
 $classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed");
 $importances = array("Top", "High", "Mid", "Low", "Unknown", "NA");
 
