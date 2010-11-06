@@ -174,8 +174,6 @@
                         or die("Could not load category $thecountercat for WikiProject $project_name: ". mysql_error());
             }//countercat
 
-            echo "Deleting \"clean\" articles.\n";
-
             //delete "clean" articles
             $sql = "DELETE FROM $user_db.articles
                     WHERE run_id = $run_id
@@ -185,8 +183,6 @@
                         FROM $user_db.categories)";
             mysql_query($sql,$con)
                     or die ('Could not delete "clean" articles: '. mysql_error());
-
-            echo "Processing importances\n";
 
             //Set importance
             foreach($importances as $importance)
@@ -204,8 +200,6 @@
                 mysql_query($sql,$con)
                         or die('Could not load WikiProject '.$wikiproject." importance: ". mysql_error());
             }
-
-            echo "Processing classes\n";
 
             //Set Class
             foreach($classes as $class)
