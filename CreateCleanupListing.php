@@ -29,6 +29,7 @@
                     active BOOL DEFAULT 1 NOT NULL,
                     cat_name VARCHAR(255) NULL,
                     last_run_id INT(8) UNSIGNED NULL,
+                    is_wikiproject BOOL DEFAULT 1 NOT NULL,
                     FOREIGN KEY (last_run_id) REFERENCES runs(id)
                 )";
         mysql_query($sql,$con)
@@ -116,7 +117,7 @@
                 AND talk.page_namespace = 1
                 AND cat.page_namespace = 14";
             mysql_query($sql,$con)
-                    or die('Could not load WikiProject '.$wikiproject." articles: ". mysql_error());
+                    or die('Could not load WikiProject '.$project_name." articles: ". mysql_error());
 
             $sql = "SELECT COUNT(*)
                     FROM $user_db.articles
@@ -144,7 +145,7 @@
                   AND article.page_namespace = 0
                   AND talk.page_namespace = 1";
               mysql_query($sql,$con)
-                      or die('Could not load WikiProject '.$wikiproject." articles: ". mysql_error());
+                      or die('Could not load WikiProject '.$project_name." articles: ". mysql_error());
 
               $sql = "SELECT COUNT(*)
                       FROM $user_db.articles
@@ -154,8 +155,37 @@
 
               if ($count == 0)
               {
-                echo "Could not get articles for WikiProject $project_name.\n";
-                continue;
+                $categoryarticles = mysql_real_escape_string($cat_name);
+                $sql = "
+                    INSERT INTO $user_db.articles
+                    (
+                        articleid,
+                        talkid,
+                        article,
+                        project_id,
+                        run_id
+                    )
+                    SELECT article.page_id, talk.page_id, article.page_title, $project_id, $run_id
+                    FROM page AS article
+                    JOIN page AS talk ON article.page_title = talk.page_title
+                    JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
+                    WHERE cl.cl_to = '$categoryarticles'
+                    AND article.page_namespace = 0
+                    AND talk.page_namespace = 1";
+                mysql_query($sql,$con)
+                        or die('Could not load WikiProject '.$project_name." articles: ". mysql_error());
+
+                $sql = "SELECT COUNT(*)
+                        FROM $user_db.articles
+                        WHERE project_id = $project_id
+                        AND run_id = $run_id";
+                $count = mysql_result(mysql_query($sql,$con), 0);
+
+                if ($count == 0)
+                {
+                  echo "Could not get articles for WikiProject $project_name.\n";
+                  continue;
+                }
               }
             }
 
@@ -231,7 +261,7 @@
                     SET last_run_id = $run_id
                     WHERE id = $project_id";
             mysql_query($sql,$con)
-                    or die("Could not set last run for WikiProject $wikiproject: " . mysql_error());
+                    or die("Could not set last run for WikiProject $project_name: " . mysql_error());
         }//wikiproject
 
         //close connection
