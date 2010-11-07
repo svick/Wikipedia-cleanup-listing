@@ -23,8 +23,8 @@
         if ($project_name == null)
                 die('Project was not set.');
 
-	$project_name_sql = mysql_real_escape_string($project_name);
-	$project_name_human = str_replace('_', ' ', $project_name);
+        $project_name_sql = mysql_real_escape_string($project_name);
+        $project_name_human = str_replace('_', ' ', $project_name);
 
         $sql = "SELECT projects.id AS id, runs.id AS run_id, runs.time AS time
                 FROM projects
@@ -59,7 +59,7 @@
                     new Column('Categories')));
 
             $sql = "SELECT DISTINCT id, article, importance, class, (
-                        SELECT CONCAT(MONTHNAME(CONCAT(year, '-', month, '-01')), ' ', year)
+                        SELECT COALESCE(CONCAT(MONTHNAME(CONCAT(year, '-', month, '-01')), ' ', year), year)
                         FROM categories AS c
                         WHERE c.article_id = articles.id
                         AND c.name = '{$section['name']}'
@@ -85,8 +85,8 @@
                 $categories = array();
                 while ($category = mysql_fetch_assoc($category_rows))
                 {
-                  $month_name = date('F', mktime(0, 0, 0, $category['month'], 1));
-                  $categories[] = "{$category['name']} ($month_name {$category['year']})";
+                  $month_name = $category['month'] == 0 ? '' : date('F', mktime(0, 0, 0, $category['month'], 1)) . ' ';
+                  $categories[] = "{$category['name']} ($month_name{$category['year']})";
                 }
 
                 $table_writer->WriteRow(array(
