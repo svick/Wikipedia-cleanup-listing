@@ -40,11 +40,12 @@
         $table_writer->WriteHeader("Cleanup listing for WikiProject $project_name_human");
         $table_writer->WriteText("This is a cleanup listing for <a href=\"http://en.wikipedia.org/wiki/Wikipedia:WikiProject_$project_name\">WikiProject $project_name_human</a> generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
 
-        $sql = "SELECT DISTINCT categories.name AS name
+        $sql = "SELECT categories.name AS name, COUNT(*) AS count
                 FROM categories
                 JOIN articles on categories.article_id = articles.id
                 WHERE articles.run_id = $run_id
-                AND articles.project_id = $project_id";
+                AND articles.project_id = $project_id
+                GROUP BY categories.name";
         $sections_query = mysql_query($sql,$con)
                 or die('Could not select sections: ' . mysql_error());
 
@@ -53,7 +54,7 @@
 
         $table_writer->WriteTocHeader();
         foreach ($sections as $section)
-            $table_writer->WriteTocEntry($section['name']);
+            $table_writer->WriteTocEntry($section['name'], "({$section['count']})");
         $table_writer->WriteTocFooter();
 
         foreach ($sections as $section)

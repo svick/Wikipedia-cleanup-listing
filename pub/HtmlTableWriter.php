@@ -109,10 +109,10 @@ class HtmlTableWriter implements ITableWriter
 <?
   }
 
-  public function WriteTocEntry($name)
+  public function WriteTocEntry($name, $text)
   {
 ?>
-      <li><a href="#<?= $name ?>"><?= $name ?></a></li>
+	<li><a href="#<?= $name ?>"><?= $name ?></a> <?= $text ?></li>
 <?
   }
 

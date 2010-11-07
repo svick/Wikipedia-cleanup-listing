@@ -39,7 +39,7 @@ class CsvTableWriter implements ITableWriter
   public function WriteTocHeader()
   { }
 
-  public function WriteTocEntry($name)
+  public function WriteTocEntry($name, $text)
   { }
 
   public function WriteTocFooter()

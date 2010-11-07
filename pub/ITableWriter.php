@@ -11,7 +11,7 @@ interface ITableWriter
   public function WriteFooter();
 
   public function WriteTocHeader();
-  public function WriteTocEntry($name);
+  public function WriteTocEntry($name, $text);
   public function WriteTocFooter();
 
   public function FormatLink($url, $text);
