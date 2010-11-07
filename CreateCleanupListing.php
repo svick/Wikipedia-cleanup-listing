@@ -154,7 +154,7 @@
 
               if ($count == 0)
               {
-                echo "Could not get articles for WikiProject $project_name.";
+                echo "Could not get articles for WikiProject $project_name.\n";
                 continue;
               }
             }
