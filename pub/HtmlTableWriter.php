@@ -33,7 +33,7 @@ class HtmlTableWriter implements ITableWriter
   public function WriteSection($name)
   {
 ?>
-    <h2><?= $name ?></h2>
+    <h2 id="<?= $name ?>"><?= $name ?></h2>
 <?
   }
 
@@ -99,6 +99,27 @@ class HtmlTableWriter implements ITableWriter
     </div>
   </body>
 </html>
+<?
+  }
+
+  public function WriteTocHeader()
+  {
+?>
+    <ul>
+<?
+  }
+
+  public function WriteTocEntry($name)
+  {
+?>
+      <li><a href="#<?= $name ?>"><?= $name ?></a></li>
+<?
+  }
+
+  public function WriteTocFooter()
+  {
+?>
+    </ul>
 <?
   }
 

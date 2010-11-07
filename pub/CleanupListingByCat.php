@@ -45,10 +45,18 @@
                 JOIN articles on categories.article_id = articles.id
                 WHERE articles.run_id = $run_id
                 AND articles.project_id = $project_id";
-        $sections = mysql_query($sql,$con)
+        $sections_query = mysql_query($sql,$con)
                 or die('Could not select sections: ' . mysql_error());
 
-        while($section = mysql_fetch_assoc($sections))
+        while($section = mysql_fetch_assoc($sections_query))
+            $sections[] = $section;
+
+        $table_writer->WriteTocHeader();
+        foreach ($sections as $section)
+            $table_writer->WriteTocEntry($section['name']);
+        $table_writer->WriteTocFooter();
+
+        foreach ($sections as $section)
         {
             $table_writer->WriteSection($section['name']);
             $table_writer->WriteTableHeader(array(

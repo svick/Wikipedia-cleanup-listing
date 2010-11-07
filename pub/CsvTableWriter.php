@@ -36,6 +36,15 @@ class CsvTableWriter implements ITableWriter
   public function WriteFooter()
   { }
 
+  public function WriteTocHeader()
+  { }
+
+  public function WriteTocEntry($name)
+  { }
+
+  public function WriteTocFooter()
+  { }
+
   public function FormatLink($url, $text)
   {
     return $text;

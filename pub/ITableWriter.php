@@ -10,6 +10,10 @@ interface ITableWriter
   public function WriteTableFooter();
   public function WriteFooter();
 
+  public function WriteTocHeader();
+  public function WriteTocEntry($name);
+  public function WriteTocFooter();
+
   public function FormatLink($url, $text);
   public function FormatWikiLink($page, $text);
 }
