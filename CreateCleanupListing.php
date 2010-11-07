@@ -90,7 +90,7 @@
         {
             $project_id = $project['id'];
             $project_name = $project['name'];
-            $cat_name = $project['cat_name'] ?: $project['name'];
+            $cat_name = $project['cat_name'] ? $project['cat_name'] : $project['name'];
 
             echo "Processing WikiProject $project_name.\n";
 
