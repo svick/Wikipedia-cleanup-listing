@@ -23,16 +23,15 @@
         if ($project_name == null)
                 die('Project was not set.');
 
-        $sql = "SELECT id, time FROM runs ORDER BY id DESC LIMIT 1";
-        $run = mysql_fetch_assoc(mysql_query($sql,$con))
-                or die('Could not select last run: ' . mysql_error());
-        $run_id = $run['id'];
-        $run_time = $run['time'];
-
-        $sql = "SELECT id FROM projects WHERE name = '$project_name'";
+        $sql = "SELECT projects.id AS id, runs.id AS run_id, runs.time AS time
+                FROM projects
+                JOIN runs ON projects.last_run_id = runs.id
+                WHERE name = '$project_name'";
         $project = mysql_fetch_assoc(mysql_query($sql,$con))
                 or die('Could not select project: ' . mysql_error());
         $project_id = $project['id'];
+        $run_id = $project['run_id'];
+        $run_time = $project['time'];
 
         $table_writer = TableWriterFactory::Create($_GET['format']);
         $table_writer->WriteHeader("Cleanup listing for WikiProject $project_name");

@@ -27,7 +27,9 @@
                     id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     active BOOL DEFAULT 1 NOT NULL,
-                    cat_name VARCHAR(255) NULL
+                    cat_name VARCHAR(255) NULL,
+                    last_run_id INT(8) UNSIGNED NULL,
+                    FOREIGN KEY (last_run_id) REFERENCES runs(id)
                 )";
         mysql_query($sql,$con)
                 or die('Could not create projects table: ' . mysql_error());
@@ -75,9 +77,12 @@
 
         $run_id = mysql_insert_id();
 
-        $sql = "SELECT id, name, cat_name
+        $sql = "SELECT projects.id AS id, name, cat_name
                 FROM $user_db.projects
-                WHERE active = 1";
+                LEFT JOIN $user_db.runs on projects.last_run_id = runs.id
+                WHERE active = 1
+                AND (time IS NULL
+                     OR DATEDIFF(NOW(), time) >= 7)";
         $projects = mysql_query($sql,$con)
                 or die('Could not select projects: '. mysql_error());
 
@@ -149,7 +154,7 @@
 
               if ($count == 0)
               {
-                error_log("Could not get articles for WikiProject $project_name.");
+                echo "Could not get articles for WikiProject $project_name.";
                 continue;
               }
             }
@@ -198,7 +203,7 @@
                            FROM categorylinks cl
                            WHERE cl.cl_to = '$theimportance')";
                 mysql_query($sql,$con)
-                        or die('Could not load WikiProject '.$wikiproject." importance: ". mysql_error());
+                        or die("Could not load WikiProject $wikiproject importance: ". mysql_error());
             }
 
             //Set Class
@@ -218,8 +223,14 @@
                            FROM categorylinks cl
                            WHERE cl.cl_to = '$theclass')";
             mysql_query($sql,$con)
-                    or die('Could not load WikiProject '.$wikiproject." quality class: ". mysql_error());
+                    or die("Could not load WikiProject $wikiproject quality class: ". mysql_error());
             }
+
+            $sql = "UPDATE $user_db.projects
+                    SET last_run_id = $run_id
+                    WHERE id = $project_id";
+            mysql_query($sql,$con)
+                    or die("Could not set last run for WikiProject $wikiproject: " . mysql_error());
         }//wikiproject
 
         //close connection

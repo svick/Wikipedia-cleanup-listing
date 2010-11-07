@@ -18,26 +18,16 @@
         mysql_select_db($user_db, $con)
                 or die('Could not select db: ' . mysql_error());
 
-        $sql = "SELECT id, time FROM runs ORDER BY id DESC LIMIT 1";
-        $run = mysql_fetch_assoc(mysql_query($sql,$con))
-                or die('Could not select last run: ' . mysql_error());
-        $run_id = $run['id'];
-        $run_time = $run['time'];
-
         $table_writer = TableWriterFactory::Create('html');
         $table_writer->WriteHeader("Cleanup listings for WikiProjects");
-        $table_writer->WriteText("This is a list of cleanup listings for various WikiProjects generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
+        $table_writer->WriteText("This is a list of cleanup listings for various WikiProjects.");
 ?>
     <ul>
 <?
         $sql = "SELECT name
                 FROM projects
                 WHERE active = 1
-                AND (
-                  SELECT COUNT(*)
-                  FROM articles
-                  WHERE articles.project_id = projects.id
-                  AND articles.run_id = $run_id) > 0
+                AND last_run_id IS NOT NULL
                 ORDER BY name";
         $projects = mysql_query($sql,$con);
         while ($project = mysql_fetch_assoc($projects))
