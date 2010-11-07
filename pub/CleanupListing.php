@@ -18,15 +18,18 @@
         mysql_select_db($user_db, $con)
                 or die('Could not select db: ' . mysql_error());
 
-        $project_name = mysql_real_escape_string($_GET['project']);
+        $project_name = $_GET['project'];
 
         if ($project_name == null)
                 die('Project was not set.');
 
+	$project_name_sql = mysql_real_escape_string($project_name);
+	$project_name_human = str_replace('_', ' ', $project_name);
+
         $sql = "SELECT projects.id AS id, runs.id AS run_id, runs.time AS time
                 FROM projects
                 JOIN runs ON projects.last_run_id = runs.id
-                WHERE name = '$project_name'";
+                WHERE name = '$project_name_sql'";
         $project = mysql_fetch_assoc(mysql_query($sql,$con))
                 or die('Could not select project: ' . mysql_error());
         $project_id = $project['id'];
@@ -34,8 +37,8 @@
         $run_time = $project['time'];
 
         $table_writer = TableWriterFactory::Create($_GET['format']);
-        $table_writer->WriteHeader("Cleanup listing for WikiProject $project_name");
-        $table_writer->WriteText("This is a cleanup listing for <a href=\"http://en.wikipedia.org/wiki/Wikipedia:WikiProject_$project_name\">WikiProject $project_name</a> generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
+        $table_writer->WriteHeader("Cleanup listing for WikiProject $project_name_human");
+        $table_writer->WriteText("This is a cleanup listing for <a href=\"http://en.wikipedia.org/wiki/Wikipedia:WikiProject_$project_name\">WikiProject $project_name_human</a> generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
         $table_writer->WriteTableHeader(array(
                 new Column('Article', true),
                 new Column('Importance', true),

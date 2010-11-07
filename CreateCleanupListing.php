@@ -192,8 +192,7 @@
             //Set importance
             foreach($importances as $importance)
             {
-
-                $theimportance = "${importance}-importance_${cat_name}_articles";
+                $theimportance = mysql_real_escape_string("${importance}-importance_${cat_name}_articles");
                 $sql = "UPDATE $user_db.articles a
                         SET a.importance = '$importance'
                         WHERE a.project_id = $project_id
@@ -203,7 +202,7 @@
                            FROM categorylinks cl
                            WHERE cl.cl_to = '$theimportance')";
                 mysql_query($sql,$con)
-                        or die("Could not load WikiProject $wikiproject importance: ". mysql_error());
+                        or die("Could not load WikiProject $project_name importance: ". mysql_error());
             }
 
             //Set Class
@@ -214,6 +213,8 @@
                 else
                   $theclass = "${class}-Class_${cat_name}_articles";
 
+                $theclass = mysql_real_escape_string($theclass);
+
                 $sql = "UPDATE $user_db.articles a
                         SET a.class = '$class'
                         WHERE a.project_id = $project_id
@@ -223,7 +224,7 @@
                            FROM categorylinks cl
                            WHERE cl.cl_to = '$theclass')";
             mysql_query($sql,$con)
-                    or die("Could not load WikiProject $wikiproject quality class: ". mysql_error());
+                    or die("Could not load WikiProject $project_name quality class: ". mysql_error());
             }
 
             $sql = "UPDATE $user_db.projects
