@@ -76,7 +76,7 @@ $cleanupcountercats = array(
   'Wikipedia articles needing SmackBot clean up',
   'Wikipedia articles needing cleanup',
   'Articles needing the year an event occurred');
-$classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed");
-$importances = array("Top", "High", "Mid", "Low", "Unknown", "NA");
+$classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed", "NA", "Book", "Category", "Current", "Disambig", "File", "Future", "Merge", "Needed", "Portal", "Project", "Redirect", "Template");
+$importances = array("Top", "High", "Mid", "Low", "Unknown", "NA", "Bottom", "No");
 
 ?>
