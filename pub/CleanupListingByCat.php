@@ -68,11 +68,17 @@
         {
             $table_writer->WriteSection($section['name']);
             $table_writer->WriteTableHeader(array(
-                    new Column('Article'),
-                    new Column('Importance'),
-                    new Column('Class'),
+                    new Column('Article', true),
+                    new Column('Importance', true),
+                    new Column('Class', true),
                     new Column('Month'),
                     new Column('Categories')));
+
+            $sort = mysql_real_escape_string($_GET['sort']);
+            if ($sort)
+                    $sort = strtolower($sort);
+            else
+                    $sort = 'article';
 
             $sql = "SELECT DISTINCT id, article, importance, class, (
                         SELECT COALESCE(CONCAT(MONTHNAME(CONCAT(year, '-', month, '-01')), ' ', year), year)
@@ -87,7 +93,7 @@
                     WHERE run_id = $run_id
                     AND project_id = $project_id
                     AND categories.name = '{$section['name']}'
-                    ORDER BY article";
+                    ORDER BY $sort";
             $articles = mysql_query($sql,$con)
               or die('Could not load articles: ' . mysql_error());
 

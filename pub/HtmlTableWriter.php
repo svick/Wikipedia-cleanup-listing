@@ -4,6 +4,8 @@ require_once 'ITableWriter.php';
 
 class HtmlTableWriter implements ITableWriter
 {
+  protected $current_section;
+
   public function WriteHeader($title)
   {
     header('Content-Type: text/html; charset=UTF-8');
@@ -32,6 +34,7 @@ class HtmlTableWriter implements ITableWriter
 
   public function WriteSection($name)
   {
+    $this->current_section = $name;
 ?>
     <h2 id="<?= $name ?>"><?= $name ?></h2>
 <?
@@ -53,6 +56,8 @@ class HtmlTableWriter implements ITableWriter
         foreach($params as $key => $value)
           $params2[] = "$key=$value";
         $url = $_SERVER['PHP_SELF'] . '?' . implode('&', $params2);
+        if ($this->current_section)
+          $url = $url . '#' . $this->current_section;
         $column_string = $this->FormatLink($url, $column->Name);
       }
       else
@@ -112,7 +117,7 @@ class HtmlTableWriter implements ITableWriter
   public function WriteTocEntry($name, $text)
   {
 ?>
-	<li><a href="#<?= $name ?>"><?= $name ?></a> <?= $text ?></li>
+      <li><a href="#<?= $name ?>"><?= $name ?></a> <?= $text ?></li>
 <?
   }
 
