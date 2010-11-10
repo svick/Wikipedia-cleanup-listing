@@ -32,11 +32,12 @@
         $projects = mysql_query($sql,$con);
         while ($project = mysql_fetch_assoc($projects))
         {
+	  $encoded_name = urlencode($project['name']);
 ?>
       <li>
-        <?= $table_writer->FormatLink("CleanupListing.php?project={$project['name']}", $project['name']) ?>
-        (<?= $table_writer->FormatLink("CleanupListing.php?project={$project['name']}&format=csv", 'CSV') ?>,
-        <?= $table_writer->FormatLink("CleanupListingByCat.php?project={$project['name']}", 'by cat') ?>)
+        <?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name", $project['name']) ?>
+        (<?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name&format=csv", 'CSV') ?>,
+        <?= $table_writer->FormatLink("CleanupListingByCat.php?project=$encoded_name", 'by cat') ?>)
       </li>
 <?
         }
