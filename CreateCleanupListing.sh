@@ -4,4 +4,4 @@
 #$ -m e
 #$ -l sqlprocs-s1=1
 
-php /home/svick/cleanup\ listing/CreateCleanupListing.php
+php /home/svick/CleanupListing/CreateCleanupListing.php
