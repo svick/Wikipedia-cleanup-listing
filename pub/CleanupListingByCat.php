@@ -23,6 +23,8 @@
         if ($project_name == null)
                 die('Project was not set.');
 
+        $project_name = str_replace(' ', '_', $project_name);
+
         $project_name_sql = mysql_real_escape_string($project_name);
         $project_name_human = str_replace('_', ' ', $project_name);
 
