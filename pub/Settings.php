@@ -69,7 +69,16 @@ $monthlycleanupcountercats = array(
   'Articles that need to be wikified',
   'Wikipedia articles needing cleanup',
   'Articles needing the year an event occurred');
-$cleanupcountercats = array();
+$cleanupcountercats = array(
+  'Tree of Life cleanup',
+  'Animals cleanup',
+  'Invalid conservation status',
+  'Missing taxobox',
+  'Plant articles needing a taxobox',
+  'Redundant taxobox',
+  'Taxoboxes needing a status system parameter',
+  'Taxoboxes with an invalid color',
+  'Taxoboxes with an unrecognised status system');
 $classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed", "NA", "Book", "Category", "Current", "Disambig", "File", "Future", "Merge", "Needed", "Portal", "Project", "Redirect", "Template");
 $importances = array("Top", "High", "Mid", "Low", "Unknown", "NA", "Bottom", "No");
 
