@@ -1,6 +1,6 @@
 <?php
 
-$cleanupcountercats = array(
+$monthlycleanupcountercats = array(
   'Accuracy disputes',
   'Articles lacking page references',
   'BLP articles lacking sources',
@@ -69,6 +69,7 @@ $cleanupcountercats = array(
   'Articles that need to be wikified',
   'Wikipedia articles needing cleanup',
   'Articles needing the year an event occurred');
+$cleanupcountercats = array();
 $classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed", "NA", "Book", "Category", "Current", "Disambig", "File", "Future", "Merge", "Needed", "Portal", "Project", "Redirect", "Template");
 $importances = array("Top", "High", "Mid", "Low", "Unknown", "NA", "Bottom", "No");
 

@@ -82,8 +82,9 @@
             $categories = array();
             while ($category = mysql_fetch_assoc($category_rows))
             {
-              $month_name = date('F', mktime(0, 0, 0, $category['month'], 1));
-              $categories[] = "{$category['name']} ($month_name {$category['year']})";
+              $month_name = $category['month'] ? date('F', mktime(0, 0, 0, $category['month'], 1)) . ' ' : '';
+              $date_part = $category['year'] ? " ($month_name{$category['year']})" : '';
+              $categories[] = "{$category['name']}$date_part";
             }
 
             $table_writer->WriteRow(array(

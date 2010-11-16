@@ -64,8 +64,8 @@
 
         $sql = "CREATE TABLE IF NOT EXISTS $user_db.categories(
                     name VARCHAR(255) NOT NULL,
-                    month TINYINT(2) UNSIGNED NOT NULL,
-                    year YEAR NOT NULL,
+                    month TINYINT(2) UNSIGNED NULL,
+                    year YEAR NULL,
                     article_id INT(8) UNSIGNED NOT NULL,
                     FOREIGN KEY (article_id) REFERENCES articles(id)
                 )";
@@ -189,7 +189,7 @@
               }
             }
 
-            foreach($cleanupcountercats as $countercat)
+            foreach($monthlycleanupcountercats as $countercat)
             {
                 $thecountercat = str_replace(' ', '_', "$countercat from %");
 
@@ -199,6 +199,26 @@
                           '$countercat',
                           MONTH(STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(cl_to, '_', -2), '_', 1), '%M')),
                           SUBSTRING_INDEX(cl_to, '_', -1),
+                          a.id
+                        FROM $user_db.articles a
+                        JOIN categorylinks cl ON cl.cl_from = a.articleid
+                        WHERE a.project_id = $project_id
+                        AND a.run_id = $run_id
+                        AND cl.cl_to LIKE '$thecountercat'";
+                mysql_query($sql,$con)
+                        or die("Could not load category $countercat for WikiProject $project_name: ". mysql_error());
+            }//countercat
+
+            foreach($cleanupcountercats as $countercat)
+            {
+                $thecountercat = str_replace(' ', '_', $countercat);
+
+                //insert into categories table
+                $sql = "INSERT INTO $user_db.categories (name, month, year, article_id)
+                        SELECT
+                          '$countercat',
+                          NULL,
+                          NULL,
                           a.id
                         FROM $user_db.articles a
                         JOIN categorylinks cl ON cl.cl_from = a.articleid
