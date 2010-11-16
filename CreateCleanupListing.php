@@ -106,7 +106,7 @@
                     project_id,
                     run_id
                 )
-                SELECT article.page_id, talk.page_id, article.page_title, $project_id, $run_id
+                SELECT DISTINCT article.page_id, talk.page_id, article.page_title, $project_id, $run_id
                 FROM page AS article
                 JOIN page AS talk ON article.page_title = talk.page_title
                 JOIN categorylinks AS cl1 ON talk.page_id = cl1.cl_from
