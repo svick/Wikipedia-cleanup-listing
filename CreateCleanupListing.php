@@ -38,6 +38,7 @@
                     id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
                     time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     project_id INT(8) UNSIGNED NOT NULL,
+                    total_articles INT(8) UNSIGNED NULL,
                     FOREIGN KEY (project_id) REFERENCES projects(id)
                 )";
         mysql_query($sql,$con)
@@ -182,6 +183,11 @@
                 }
               }
             }
+
+            $sql = "UPDATE $user_db.runs
+                    SET total_articles = $count
+                    WHERE id = $run_id";
+            mysql_query($sql, $con);
 
             foreach($monthlycleanupcountercats as $countercat)
             {

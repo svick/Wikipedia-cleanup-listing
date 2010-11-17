@@ -28,7 +28,15 @@
         $project_name_sql = mysql_real_escape_string($project_name);
         $project_name_human = str_replace('_', ' ', $project_name);
 
-        $sql = "SELECT projects.id AS id, projects.is_wikiproject AS is_wikiproject, runs.id AS run_id, runs.time AS time
+        $sql = "SELECT
+                    projects.id AS id,
+                    projects.is_wikiproject AS is_wikiproject,
+                    runs.id AS run_id,
+                    runs.time AS time,
+                    runs.total_articles AS total_articles,
+                    (SELECT COUNT(*)
+                     FROM articles
+                     WHERE run_id = runs.id) AS cleanup_articles
                 FROM projects
                 JOIN runs ON projects.id = runs.project_id
                 WHERE name = '$project_name_sql'
@@ -40,6 +48,9 @@
         $run_id = $project['run_id'];
         $run_time = $project['time'];
         $is_wikiproject = $project['is_wikiproject'];
+        $total_articles = $project['total_articles'];
+        $cleanup_articles = $project['cleanup_articles'];
+
         if ($is_wikiproject)
         {
             $project_name = "WikiProject_$project_name";
@@ -50,6 +61,11 @@
         $table_writer->WriteHeader("Cleanup listing for $project_name_human");
         $link = $table_writer->FormatWikiLink("Wikipedia:$project_name", "$project_name_human");
         $table_writer->WriteText("This is a cleanup listing for $link generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
+        if ($total_articles)
+        {
+            $cleanup_percentage = sprintf('%01.1f', $cleanup_articles / $total_articles * 100);
+            $table_writer->WriteText("Of the $total_articles articles in this project $cleanup_articles or $cleanup_percentage % are marked for cleanup.");
+        }
         $table_writer->WriteTableHeader(array(
                 new Column('Article', true),
                 new Column('Importance', true),
