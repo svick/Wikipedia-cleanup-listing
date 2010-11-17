@@ -20,22 +20,7 @@ import MySQLdb
 import wikitools
 import settings
 
-report_title_main = settings.rootpage + 'WikiProjects by cleanup'
-
-report_template = u'''
-List of WikiProjects with cleanup articles; \
-data as of <onlyinclude>%s</onlyinclude>.
-{| class="wikitable sortable plainlinks"
-|-
-! WikiProject
-! By Article
-! By Category
-! Statistics
-! Date
-|-
-%s
-|}
-'''
+report_title = 'Cleanup listing'
 
 #Login to wiki
 wiki = wikitools.Wiki(settings.apiurl)
@@ -44,7 +29,7 @@ wiki.login(settings.username, settings.password)
 
 #Login to db
 try:
-    conn = MySQLdb.connect(    host=settings.host,
+    conn = MySQLdb.connect( host=settings.host,
                             db=settings.dbname,
                             read_default_file='~/.my.cnf')
 except MySQLdb.Error, e:
@@ -55,7 +40,6 @@ cursor = conn.cursor()
 
 #Fetch list of projects
 cursor.execute(u'''
-    /* project_changes.py */
     SELECT name
     FROM projects
     WHERE active = 1
@@ -63,13 +47,9 @@ cursor.execute(u'''
     ORDER BY name
     ''')
 
-projects = []
-for row in cursor.fetchall():
-    projects.append(unicode(row[0], 'utf-8'))
-
-
 #Get the projects' cleanup
-for project in projects:
+for row in cursor.fetchall():
+    project = unicode(row[0], 'utf-8')
 
     #First by article
     #Get project + run id
@@ -150,7 +130,7 @@ data as of <onlyinclude>%s</onlyinclude>.
 
         if byarticleoutputlength > 150000:
             byarticleoutput.append("\n|}")
-            report = wikitools.Page(wiki, report_title + "/" + project + + "(a) (" + byarticleoutputcounter + ")")
+            report = wikitools.Page(wiki, "Wikipedia:" + project_name + "/" + report_title + "(a) (" + byarticleoutputcounter + ")")
             report_text = str.join(byarticleoutput)
             report_text = report_text.encode('utf-8')
             report.edit(report_text, summary=settings.editsumm, bot=1)
@@ -263,12 +243,12 @@ ORDER BY article''' % (section['name'],run_id,project_id,section['name'])
             bycategoryoutput.append(u"|[[%s]]\n|%s\n|%s\n|%s\n|%s\n|-\n" % (article['article'], article['importance'],article['class'],categoriescount,categories))
             bycategoryoutputlength += bycategoryoutputlength[-1]
 
-        #finish print out by article
+        #finish print out by category
         bycategoryoutput.append("\n|}")
         if bycategoryoutputcounter > 1:
-            report = wikitools.Page(wiki, report_title + "/" + project + "(a) (" + bycategoryoutputlength + ")"
+            report = wikitools.Page(wiki, report_title + "/" + project + "(c) (" + bycategoryoutputlength + ")"
         else:
-            report = wikitools.Page(wiki, report_title + "/" + project + "(a)")
+            report = wikitools.Page(wiki, report_title + "/" + project + "(c)")
                 report_text = str.join(bycategoryoutput)
         report_text = str.join(bycategoryoutput)
         report_text = report_text.encode('utf-8')
