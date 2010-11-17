@@ -28,7 +28,8 @@
                     name VARCHAR(255) NOT NULL,
                     active BOOL DEFAULT 1 NOT NULL,
                     cat_name VARCHAR(255) NULL,
-                    is_wikiproject BOOL DEFAULT 1 NOT NULL
+                    is_wikiproject BOOL DEFAULT 1 NOT NULL,
+                    force_create BOOL DEFAULT 0 NOT NULL
                 )";
         mysql_query($sql,$con)
                 or die('Could not create projects table: ' . mysql_error());
@@ -264,6 +265,12 @@
             mysql_query($sql,$con)
                     or die("Could not load WikiProject $project_name quality class: ". mysql_error());
             }
+
+            $sql = "UPDATE $user_db.projects
+                    SET force_create = 0
+                    WHERE id = $project_id";
+            mysql_query($sql, $con)
+                    or die("Could not reset forcing creating for $project_name: " . mysql_error());
         }//wikiproject
 
         //close connection
