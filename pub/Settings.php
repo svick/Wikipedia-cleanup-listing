@@ -11,7 +11,6 @@ $monthlycleanupcountercats = array(
   'Wikipedia articles needing clarification',
   'Wikipedia pages needing cleanup',
   'Articles needing cleanup',
-  'Statements with common sense issues',
   'Wikipedia articles with possible conflicts of interest',
   'Wikipedia articles needing context',
   'Wikipedia articles needing copy edit',
@@ -68,7 +67,10 @@ $monthlycleanupcountercats = array(
   'Articles with specifically marked weasel-worded phrases',
   'Articles that need to be wikified',
   'Wikipedia articles needing cleanup',
-  'Articles needing the year an event occurred');
+  'Articles needing the year an event occurred',
+  'Articles with obsolete information',
+  'Wikipedia articles needing reorganization',
+  'Cleanup section');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
