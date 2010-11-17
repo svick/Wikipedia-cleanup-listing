@@ -30,8 +30,10 @@
 
         $sql = "SELECT projects.id AS id, projects.is_wikiproject AS is_wikiproject, runs.id AS run_id, runs.time AS time
                 FROM projects
-                JOIN runs ON projects.last_run_id = runs.id
-                WHERE name = '$project_name_sql'";
+                JOIN runs ON projects.id = runs.project_id
+                WHERE name = '$project_name_sql'
+                ORDER BY runs.time DESC
+                LIMIT 1";
         $project = mysql_fetch_assoc(mysql_query($sql,$con))
                 or die('Could not select project: ' . mysql_error());
         $project_id = $project['id'];
@@ -67,7 +69,6 @@
         $sql = "SELECT id, article, importance, class, (SELECT COUNT(*) FROM categories WHERE articles.id = categories.article_id) AS count
                 FROM articles
                 WHERE run_id = $run_id
-                AND project_id = $project_id
                 ORDER BY $sort";
         $articles = mysql_query($sql,$con)
           or die('Could not load articles: ' . mysql_error());

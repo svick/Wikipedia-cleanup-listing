@@ -28,16 +28,16 @@
                     name VARCHAR(255) NOT NULL,
                     active BOOL DEFAULT 1 NOT NULL,
                     cat_name VARCHAR(255) NULL,
-                    last_run_id INT(8) UNSIGNED NULL,
-                    is_wikiproject BOOL DEFAULT 1 NOT NULL,
-                    FOREIGN KEY (last_run_id) REFERENCES runs(id)
+                    is_wikiproject BOOL DEFAULT 1 NOT NULL
                 )";
         mysql_query($sql,$con)
                 or die('Could not create projects table: ' . mysql_error());
 
         $sql = "CREATE TABLE IF NOT EXISTS $user_db.runs(
                     id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                    time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    project_id INT(8) UNSIGNED NOT NULL,
+                    FOREIGN KEY (project_id) REFERENCES projects(id)
                 )";
         mysql_query($sql,$con)
                 or die('Could not create runs table: ' . mysql_error());
@@ -53,11 +53,8 @@
                     importance ENUM($importances_string),
                     class ENUM($classes_string),
                     taskforce VARCHAR(255),
-                    project_id INT(8) UNSIGNED,
                     run_id INT(8) UNSIGNED,
-                    FOREIGN KEY (project_id) REFERENCES projects(id),
-                    FOREIGN KEY (run_id) REFERENCES runs(id),
-                    INDEX (run_id, project_id)
+                    FOREIGN KEY (run_id) REFERENCES runs(id)
                 )";
         mysql_query($sql,$con)
                 or die('Could not create articles table: ' . mysql_error());
@@ -72,18 +69,14 @@
         mysql_query($sql,$con)
                 or die('Could not create categories table: ' . mysql_error());
 
-        $sql = "INSERT INTO $user_db.runs () VALUE ()";
-        mysql_query($sql,$con)
-                or die('Could not insert new run: ' . mysql_error());
-
-        $run_id = mysql_insert_id();
-
-        $sql = "SELECT projects.id AS id, name, cat_name
+        $sql = "SELECT DISTINCT projects.id AS id, name, cat_name
                 FROM $user_db.projects
-                LEFT JOIN $user_db.runs on projects.last_run_id = runs.id
+                LEFT JOIN $user_db.runs
+                    ON projects.id = runs.project_id
+                    AND DATEDIFF(NOW(), time) < 7
                 WHERE active = 1
                 AND (time IS NULL
-                     OR DATEDIFF(NOW(), time) >= 7)";
+                     OR force_create = 1)";
         $projects = mysql_query($sql,$con)
                 or die('Could not select projects: '. mysql_error());
 
@@ -95,6 +88,12 @@
 
             echo "Processing WikiProject $project_name.\n";
 
+            $sql = "INSERT INTO $user_db.runs (project_id) VALUE ($project_id)";
+            mysql_query($sql,$con)
+                    or die('Could not insert new run: ' . mysql_error());
+
+            $run_id = mysql_insert_id();
+
             //Load articles and pageid from WikiProject
             $categoryarticles = mysql_real_escape_string(ucfirst("${cat_name}_articles_by_quality"));
             $sql = "
@@ -103,10 +102,9 @@
                     articleid,
                     talkid,
                     article,
-                    project_id,
                     run_id
                 )
-                SELECT DISTINCT article.page_id, talk.page_id, article.page_title, $project_id, $run_id
+                SELECT DISTINCT article.page_id, talk.page_id, article.page_title, $run_id
                 FROM page AS article
                 JOIN page AS talk ON article.page_title = talk.page_title
                 JOIN categorylinks AS cl1 ON talk.page_id = cl1.cl_from
@@ -121,8 +119,7 @@
 
             $sql = "SELECT COUNT(*)
                     FROM $user_db.articles
-                    WHERE project_id = $project_id
-                    AND run_id = $run_id";
+                    WHERE run_id = $run_id";
             $count = mysql_result(mysql_query($sql,$con), 0);
 
             if ($count == 0)
@@ -134,10 +131,9 @@
                       articleid,
                       talkid,
                       article,
-                      project_id,
                       run_id
                   )
-                  SELECT article.page_id, talk.page_id, article.page_title, $project_id, $run_id
+                  SELECT article.page_id, talk.page_id, article.page_title, $run_id
                   FROM page AS article
                   JOIN page AS talk ON article.page_title = talk.page_title
                   JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
@@ -149,8 +145,7 @@
 
               $sql = "SELECT COUNT(*)
                       FROM $user_db.articles
-                      WHERE project_id = $project_id
-                      AND run_id = $run_id";
+                      WHERE run_id = $run_id";
               $count = mysql_result(mysql_query($sql,$con), 0);
 
               if ($count == 0)
@@ -162,10 +157,9 @@
                         articleid,
                         talkid,
                         article,
-                        project_id,
                         run_id
                     )
-                    SELECT article.page_id, talk.page_id, article.page_title, $project_id, $run_id
+                    SELECT article.page_id, talk.page_id, article.page_title, $run_id
                     FROM page AS article
                     JOIN page AS talk ON article.page_title = talk.page_title
                     JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
@@ -177,8 +171,7 @@
 
                 $sql = "SELECT COUNT(*)
                         FROM $user_db.articles
-                        WHERE project_id = $project_id
-                        AND run_id = $run_id";
+                        WHERE run_id = $run_id";
                 $count = mysql_result(mysql_query($sql,$con), 0);
 
                 if ($count == 0)
@@ -202,8 +195,7 @@
                           a.id
                         FROM $user_db.articles a
                         JOIN categorylinks cl ON cl.cl_from = a.articleid
-                        WHERE a.project_id = $project_id
-                        AND a.run_id = $run_id
+                        WHERE a.run_id = $run_id
                         AND cl.cl_to LIKE '$thecountercat'";
                 mysql_query($sql,$con)
                         or die("Could not load category $countercat for WikiProject $project_name: ". mysql_error());
@@ -222,8 +214,7 @@
                           a.id
                         FROM $user_db.articles a
                         JOIN categorylinks cl ON cl.cl_from = a.articleid
-                        WHERE a.project_id = $project_id
-                        AND a.run_id = $run_id
+                        WHERE a.run_id = $run_id
                         AND cl.cl_to LIKE '$thecountercat'";
                 mysql_query($sql,$con)
                         or die("Could not load category $countercat for WikiProject $project_name: ". mysql_error());
@@ -232,7 +223,6 @@
             //delete "clean" articles
             $sql = "DELETE FROM $user_db.articles
                     WHERE run_id = $run_id
-                    AND project_id = $project_id
                     AND id NOT IN (
                         SELECT article_id
                         FROM $user_db.categories)";
@@ -245,8 +235,7 @@
                 $theimportance = mysql_real_escape_string("${importance}-importance_${cat_name}_articles");
                 $sql = "UPDATE $user_db.articles a
                         SET a.importance = '$importance'
-                        WHERE a.project_id = $project_id
-                        AND a.run_id = $run_id
+                        WHERE a.run_id = $run_id
                         AND a.talkid IN
                           (SELECT cl.cl_from
                            FROM categorylinks cl
@@ -267,8 +256,7 @@
 
                 $sql = "UPDATE $user_db.articles a
                         SET a.class = '$class'
-                        WHERE a.project_id = $project_id
-                        AND a.run_id = $run_id
+                        WHERE a.run_id = $run_id
                         AND a.talkid IN
                           (SELECT cl.cl_from
                            FROM categorylinks cl
@@ -276,12 +264,6 @@
             mysql_query($sql,$con)
                     or die("Could not load WikiProject $project_name quality class: ". mysql_error());
             }
-
-            $sql = "UPDATE $user_db.projects
-                    SET last_run_id = $run_id
-                    WHERE id = $project_id";
-            mysql_query($sql,$con)
-                    or die("Could not set last run for WikiProject $project_name: " . mysql_error());
         }//wikiproject
 
         //close connection

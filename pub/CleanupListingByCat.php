@@ -30,8 +30,10 @@
 
         $sql = "SELECT projects.id AS id, projects.is_wikiproject AS is_wikiproject, runs.id AS run_id, runs.time AS time
                 FROM projects
-                JOIN runs ON projects.last_run_id = runs.id
-                WHERE name = '$project_name_sql'";
+                JOIN runs ON projects.id = runs.project_id
+                WHERE name = '$project_name_sql'
+                ORDER BY runs.time DESC
+                LIMIT 1";
         $project = mysql_fetch_assoc(mysql_query($sql,$con))
                 or die('Could not select project: ' . mysql_error());
         $project_id = $project['id'];
@@ -53,7 +55,6 @@
                 FROM categories
                 JOIN articles on categories.article_id = articles.id
                 WHERE articles.run_id = $run_id
-                AND articles.project_id = $project_id
                 GROUP BY categories.name";
         $sections_query = mysql_query($sql,$con)
                 or die('Could not select sections: ' . mysql_error());
@@ -93,7 +94,6 @@
                     FROM articles
                     JOIN categories ON articles.id = categories.article_id
                     WHERE run_id = $run_id
-                    AND project_id = $project_id
                     AND categories.name = '{$section['name']}'
                     ORDER BY $sort";
             $articles = mysql_query($sql,$con)

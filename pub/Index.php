@@ -27,12 +27,14 @@
         $sql = "SELECT name
                 FROM projects
                 WHERE active = 1
-                AND last_run_id IS NOT NULL
+                AND id IN (
+                  SELECT project_id
+                  FROM runs)
                 ORDER BY name";
         $projects = mysql_query($sql,$con);
         while ($project = mysql_fetch_assoc($projects))
         {
-	  $encoded_name = urlencode($project['name']);
+          $encoded_name = urlencode($project['name']);
 ?>
       <li>
         <?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name", $project['name']) ?>
