@@ -5,6 +5,8 @@ require_once 'ITableWriter.php';
 class HtmlTableWriter implements ITableWriter
 {
   protected $current_section;
+  protected $columns;
+  protected $rows;
 
   public function WriteHeader($title)
   {
@@ -42,12 +44,22 @@ class HtmlTableWriter implements ITableWriter
 
   public function WriteTableHeader($columns)
   {
+    $this->columns = $columns;
+    foreach($columns as $column)
+      $column->Empty = true;
+    $this->rows = array();
+  }
+
+  function WriteTableHeaderInternal($columns)
+  {
 ?>
     <table>
       <tr>
 <?
     foreach ($columns as $column)
     {
+      if ($column->Empty)
+        continue;
       if ($column->Sortable)
       {
         $params = $_GET;
@@ -73,13 +85,25 @@ class HtmlTableWriter implements ITableWriter
 
   public function WriteRow($cells)
   {
+    $this->rows[] = $cells;
+    foreach($this->columns as $key => $column)
+    {
+      if ($cells[$key] !== null && $cells[$key] !== '')
+        $column->Empty = false;
+    }
+  }
+
+  function WriteRowInternal($cells)
+  {
 ?>
       <tr>
 <?
-    foreach($cells as $cell)
+    foreach($this->columns as $key => $column)
     {
+      if ($column->Empty)
+        continue;
 ?>
-        <td><?= $cell ?></td>
+        <td><?= $cells[$key] ?></td>
 <?
     }
 ?>
@@ -89,6 +113,9 @@ class HtmlTableWriter implements ITableWriter
 
   public function WriteTableFooter()
   {
+    $this->WriteTableHeaderInternal($this->columns);
+    foreach ($this->rows as $row)
+      $this->WriteRowInternal($row);
 ?>
     </table>
 <?
