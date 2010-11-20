@@ -67,21 +67,27 @@
             $table_writer->WriteText("Of the $total_articles articles in this project $cleanup_articles or $cleanup_percentage % are marked for cleanup.");
         }
 
-        $sql = "SELECT categories.name AS name, COUNT(*) AS count
-                FROM categories
-                JOIN articles on categories.article_id = articles.id
-                WHERE articles.run_id = $run_id
-                GROUP BY categories.name";
-        $sections_query = mysql_query($sql,$con)
-                or die('Could not select sections: ' . mysql_error());
+        $category = $_GET['category'];
+        if ($category)
+            $sections[] = array('name' => $category);
+        else
+        {
+            $sql = "SELECT categories.name AS name, COUNT(*) AS count
+                    FROM categories
+                    JOIN articles on categories.article_id = articles.id
+                    WHERE articles.run_id = $run_id
+                    GROUP BY categories.name";
+            $sections_query = mysql_query($sql,$con)
+                    or die('Could not select sections: ' . mysql_error());
 
-        while($section = mysql_fetch_assoc($sections_query))
-            $sections[] = $section;
+            while($section = mysql_fetch_assoc($sections_query))
+                $sections[] = $section;
 
-        $table_writer->WriteTocHeader();
-        foreach ($sections as $section)
-            $table_writer->WriteTocEntry($section['name'], "({$section['count']})");
-        $table_writer->WriteTocFooter();
+            $table_writer->WriteTocHeader();
+            foreach ($sections as $section)
+                $table_writer->WriteTocEntry($section['name'], "({$section['count']})");
+            $table_writer->WriteTocFooter();
+        }
 
         foreach ($sections as $section)
         {
