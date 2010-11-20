@@ -5,6 +5,7 @@
 //For Cleanup Listing
 
         require_once 'TableWriterFactory.php';
+        require_once 'Functions.php';
 
         $ts_pw = posix_getpwuid(posix_getuid());
         $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
@@ -128,13 +129,8 @@
                         WHERE article_id = {$article['id']}";
                 $category_rows = mysql_query($sql,$con)
                   or die('Could not load categories: ' . mysql_error());
-                $categories = array();
-                while ($category = mysql_fetch_assoc($category_rows))
-                {
-                  $month_name = $category['month'] ? date('F', mktime(0, 0, 0, $category['month'], 1)) . ' ' : '';
-                  $date_part = $category['year'] ? " ($month_name{$category['year']})" : '';
-                  $categories[] = "{$category['name']}$date_part";
-                }
+
+                $categories = CreateCategoryString($category_rows);
 
                 $table_writer->WriteRow(array(
                   $table_writer->FormatLink("http://en.wikipedia.org/wiki/{$article['article']}", str_replace('_', ' ', $article['article'])),
