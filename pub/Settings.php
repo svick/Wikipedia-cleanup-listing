@@ -70,7 +70,8 @@ $monthlycleanupcountercats = array(
   'Articles needing the year an event occurred',
   'Articles with obsolete information',
   'Wikipedia articles needing reorganization',
-  'Cleanup section');
+  'Cleanup section',
+  'Articles with close paraphrasing of public domain sources');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
