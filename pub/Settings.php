@@ -71,7 +71,12 @@ $monthlycleanupcountercats = array(
   'Articles with obsolete information',
   'Wikipedia articles needing reorganization',
   'Cleanup section',
-  'Articles with close paraphrasing of public domain sources');
+  'Articles with close paraphrasing of public domain sources',
+  'Wikipedia list cleanup',
+  'Articles needing more viewpoints',
+  'Articles requiring tables',
+  'Articles with limited geographic scope',
+  'Wikipedia laundry list cleanup');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
