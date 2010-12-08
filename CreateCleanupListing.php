@@ -208,7 +208,7 @@
                         or die("Could not load category $countercat for WikiProject $project_name: ". mysql_error());
             }//countercat
 
-            foreach($cleanupcountercats as $countercat)
+            foreach(array_merge($cleanupcountercats, $monthlycleanupcountercats) as $countercat)
             {
                 $thecountercat = str_replace(' ', '_', $countercat);
 
