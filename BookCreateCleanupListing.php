@@ -2,9 +2,7 @@
 //Svick
 //Smallman12q
 //PD December 2010
-//Untested version
 //Book Cleanup Listing
-//Based on CreateCleanupListing.php
 
 require_once 'pub/Settings.php';
 
@@ -28,20 +26,17 @@ mysql_query($sql,$con)
 
 //books-  book name & id
 $sql = "CREATE TABLE IF NOT EXISTS $user_db.books(
-                    id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    id INT(8) UNSIGNED NOT NULL PRIMARY KEY,
                     name VARCHAR(255) NOT NULL
-                    pageid INT(8) UNSIGNED NULL
                 )";
 mysql_query($sql,$con)
         or die('Could not create books table: ' . mysql_error());
 
 //add books which aren't in db
-$sql = "INSERT INTO $user_db.books (name, pageid)
+$sql = "INSERT IGNORE INTO $user_db.books (name, id)
         SELECT page_title, page_id
-                WHERE page_title NOT IN
-                    (SELECT name FROM $user_db.books)
-                      AND page_namespace = 108
-        FROM page";
+        FROM page
+        WHERE page_namespace = 108";
 mysql_query($sql,$con)
         or die('Could not add books: ' . mysql_error());
 
@@ -82,20 +77,19 @@ mysql_query($sql,$con)
 
 
 //Select only those which havne't run in a week
-$sql = "SELECT DISTINCT id, pageid, name
-                FROM $user_db.books
-                LEFT JOIN $user_db.bookruns
-                    ON books.id = bookruns.id
-                    AND DATEDIFF(NOW(), time) < 7
-                ";
+$sql = "SELECT id, name
+        FROM $user_db.books
+        LEFT JOIN $user_db.bookruns
+            ON books.id = bookruns.id
+            AND DATEDIFF(NOW(), time) < 7
+        WHERE time IS NULL ";
 $books = mysql_query($sql,$con)
         or die('Could not select books: '. mysql_error());
 
 //Actual comparison
 while ($book = mysql_fetch_assoc($books)) {
-    $book_pageid = $book['pageid'];
-    $book_name = $book['name'];
     $book_id = $book['id'];
+    $book_name = $book['name'];
 
     echo "Processing Book $book_name.\n";
 
@@ -108,89 +102,27 @@ while ($book = mysql_fetch_assoc($books)) {
 
     //Load article names and ids from book
     $sql = "INSERT INTO $user_db.bookarticles (articleid, article, run_id)
-            SELECT DISTINCT page.page_id, page.page_title, $run_id
+            SELECT DISTINCT page_id, page_title, $run_id
             FROM pagelinks INNER JOIN page
-                ON page.page_title = pagelinks.pl_title
-            WHERE pagelinks.pl_from = $book_id
-                AND pagelinks.pl_namespace =0";
+                ON page_title = pl_title
+                AND page_namespace = pl.namespace
+            WHERE pl_from = $book_id
+                AND pl_namespace = 0";
     mysql_query($sql,$con)
             or die('Could not load book '.$book_name." articles: ". mysql_error());
 
-    $sql = "SELECT COUNT(*)
-                    FROM $user_db.barticles
-                    WHERE run_id = $run_id";
-    $count = mysql_result(mysql_query($sql,$con), 0)
-            or die('Could not load book '.$book_name." count: ". mysql_error());
-
-    /*
-    if ($count == 0) {
-        $categoryarticles = mysql_real_escape_string("WikiProject_${cat_name}_articles");
-        $sql = "
-                  INSERT INTO $user_db.articles
-                  (
-                      articleid,
-                      article,
-                      run_id
-                  )
-                  SELECT article.page_id, talk.page_id, article.page_title, $run_id
-                  FROM page AS article
-                  JOIN page AS talk ON article.page_title = talk.page_title
-                  JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
-                  WHERE cl.cl_to = '$categoryarticles'
-                  AND article.page_namespace = 0
-                  AND talk.page_namespace = 1";
-        mysql_query($sql,$con)
-                or die('Could not load WikiProject '.$project_name." articles: ". mysql_error());
-
-        $sql = "SELECT COUNT(*)
-                      FROM $user_db.articles
-                      WHERE run_id = $run_id";
-        $count = mysql_result(mysql_query($sql,$con), 0);
-
-        if ($count == 0) {
-            $categoryarticles = mysql_real_escape_string($cat_name);
-            $sql = "
-                    INSERT INTO $user_db.articles
-                    (
-                        articleid,
-                        talkid,
-                        article,
-                        run_id
-                    )
-                    SELECT article.page_id, talk.page_id, article.page_title, $run_id
-                    FROM page AS article
-                    JOIN page AS talk ON article.page_title = talk.page_title
-                    JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
-                    WHERE cl.cl_to = '$categoryarticles'
-                    AND article.page_namespace = 0
-                    AND talk.page_namespace = 1";
-            mysql_query($sql,$con)
-                    or die('Could not load WikiProject '.$project_name." articles: ". mysql_error());
-
-            $sql = "SELECT COUNT(*)
-                        FROM $user_db.articles
-                        WHERE run_id = $run_id";
-            $count = mysql_result(mysql_query($sql,$con), 0);
-
-            if ($count == 0) {
-                echo "Could not get articles for WikiProject $project_name.\n";
-                continue;
-            }
-        }
-    }
-    */
-
-    //up to here
-
     $sql = "UPDATE $user_db.runs
-                    SET total_articles = $count
-                    WHERE id = $run_id";
+            SET total_articles = 
+              (SELECT COUNT(*)
+              FROM $user_db.bookarticles
+              WHERE run_id = $run_id)
+            WHERE id = $run_id";
     mysql_query($sql, $con)
         or die("Could not update runs :". mysql_error());
 
     //Compare each monthly countercat
     foreach($monthlycleanupcountercats as $countercat) {
-        $thecountercat = str_replace(' ', '_', "$countercat from %");
+        $thecountercat = str_replace(' ', '\_', "$countercat from %");
 
         //insert into categories table
         $sql = "INSERT INTO $user_db.bookcategories (name, month, year, article_id)
@@ -198,30 +130,30 @@ while ($book = mysql_fetch_assoc($books)) {
                           '$countercat',
                           MONTH(STR_TO_DATE(SUBSTRING_INDEX(SUBSTRING_INDEX(cl_to, '_', -2), '_', 1), '%M')),
                           SUBSTRING_INDEX(cl_to, '_', -1),
-                          $user_db.bookarticles.id
-                        FROM $user_db.bookarticles INNER JOIN categorylinks
-                            ON categorylinks.cl_from = $user_db.bookarticles.articleid
-                        WHERE $user_db.bookarticles.run_id = $run_id
-                            AND categorylinks.cl_to LIKE '$thecountercat'";
+                          a.id
+                        FROM $user_db.bookarticles a INNER JOIN categorylinks
+                            ON cl_from = a.id
+                        WHERE a.run_id = $run_id
+                            AND cl_to LIKE '$thecountercat'";
         mysql_query($sql,$con)
                 or die("Could not load monthly category $countercat for book $book_name: ". mysql_error());
     }//countercat
 
-    //Compare each NONmonthly countercat
-    foreach($cleanupcountercats as $countercat) {
-        $thecountercat = str_replace(' ', '_', $countercat);
+    //Compare each NONmonthly countercat and non-monthly versions of monthly cats
+    foreach(array_merge($cleanupcountercats, $monthlycleanupcountercats) as $countercat) {
+        $thecountercat = str_replace(' ', '\_', $countercat);
 
         //insert into categories table
-        $sql = "INSERT INTO $user_db.bcategories (name, month, year, article_id)
+        $sql = "INSERT INTO $user_db.bookcategories (name, month, year, article_id)
                         SELECT
                           '$countercat',
                           NULL,
                           NULL,
                           a.id
                         FROM $user_db.bookarticles a
-                        JOIN categorylinks cl ON cl.cl_from = a.articleid
+                        JOIN categorylinks ON cl_from = a.articleid
                         WHERE a.run_id = $run_id
-                        AND cl.cl_to LIKE '$thecountercat'";
+                        AND cl_to LIKE '$thecountercat'";
         mysql_query($sql,$con)
                 or die("Could not load non-monthly category $countercat for $book_name: ". mysql_error());
     }//countercat
@@ -235,7 +167,7 @@ while ($book = mysql_fetch_assoc($books)) {
     mysql_query($sql,$con)
             or die ('Could not delete "clean" articles: '. mysql_error());
 
-}//wikiproject
+}//book
 
 //close connection
 mysql_close($con)

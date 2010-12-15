@@ -191,7 +191,7 @@
 
             foreach($monthlycleanupcountercats as $countercat)
             {
-                $thecountercat = str_replace(' ', '_', "$countercat from %");
+                $thecountercat = str_replace(' ', '\_', "$countercat from %");
 
                 //insert into categories table
                 $sql = "INSERT INTO $user_db.categories (name, month, year, article_id)
@@ -210,7 +210,7 @@
 
             foreach(array_merge($cleanupcountercats, $monthlycleanupcountercats) as $countercat)
             {
-                $thecountercat = str_replace(' ', '_', $countercat);
+                $thecountercat = str_replace(' ', '\_', $countercat);
 
                 //insert into categories table
                 $sql = "INSERT INTO $user_db.categories (name, month, year, article_id)
