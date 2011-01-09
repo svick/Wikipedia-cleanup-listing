@@ -90,7 +90,8 @@ $cleanupcountercats = array(
   'Taxoboxes needing a status system parameter',
   'Taxoboxes with an invalid color',
   'Taxoboxes with an unrecognised status system',
-  'All articles needing coordinates');
+  'All articles needing coordinates',
+  'Proposed moves');
 $classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed", "NA", "Book", "Category", "Current", "Disambig", "File", "Future", "Merge", "Needed", "Portal", "Project", "Redirect", "Template");
 $importances = array("Top", "High", "Mid", "Low", "Unknown", "NA", "Bottom", "No");
 
