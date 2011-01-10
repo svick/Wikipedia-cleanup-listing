@@ -79,7 +79,8 @@ $monthlycleanupcountercats = array(
   'Wikipedia laundry list cleanup',
   'Wikipedia references cleanup',
   'Vague or ambiguous time',
-  'Articles with improper non-free content (lists)');
+  'Articles with improper non-free content (lists)',
+  '1911 Britannica articles needing updates');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
