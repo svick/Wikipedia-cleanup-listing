@@ -19,7 +19,6 @@ $monthlycleanupcountercats = array(
   'Articles with dead external links',
   'Dead-end pages',
   'Articles with disputed statements',
-  'Articles to be expanded',
   'Articles to be expanded by month',
   'Articles needing expert attention by month',
   'Wikipedia external links cleanup',
