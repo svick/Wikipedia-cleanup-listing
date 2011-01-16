@@ -91,7 +91,10 @@ $cleanupcountercats = array(
   'Taxoboxes with an invalid color',
   'Taxoboxes with an unrecognised status system',
   'All articles needing coordinates',
-  'Proposed moves');
+  'Proposed moves',
+  'Pages with DOIs inactive since 2008',
+  'Pages with DOIs inactive since 2009',
+  'Pages with DOIs inactive since 2010');
 $classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed", "NA", "Book", "Category", "Current", "Disambig", "File", "Future", "Merge", "Needed", "Portal", "Project", "Redirect", "Template");
 $importances = array("Top", "High", "Mid", "Low", "Unknown", "NA", "Bottom", "No");
 
