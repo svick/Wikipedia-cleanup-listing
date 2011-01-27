@@ -39,6 +39,7 @@ $sql = "CREATE TABLE IF NOT EXISTS $user_db.runs(
             time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             project_id INT(8) UNSIGNED NOT NULL,
             total_articles INT(8) UNSIGNED NULL,
+            finished TINYINT(1) NOT NULL DEFAULT 0,
             FOREIGN KEY (project_id) REFERENCES projects(id)
         )";
 mysql_query($sql,$con)
@@ -271,6 +272,12 @@ while ($project = mysql_fetch_assoc($projects))
     mysql_query($sql,$con)
             or die("Could not load WikiProject $project_name quality class: ". mysql_error());
     }
+
+    $sql = "UPDATE $user_db.runs
+            SET finished = 1
+            WHERE id = $run_id";
+    mysql_query($sql, $con)
+      or die("Could not set run as finished for $project_name: " . mysql_error());
 
     $sql = "UPDATE $user_db.projects
             SET force_create = 0

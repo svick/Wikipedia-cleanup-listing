@@ -41,6 +41,7 @@
                 FROM projects
                 JOIN runs ON projects.id = runs.project_id
                 WHERE name = '$project_name_sql'
+                AND runs.finished = 1
                 ORDER BY runs.time DESC
                 LIMIT 1";
         $project = mysql_fetch_assoc(mysql_query($sql,$con))
