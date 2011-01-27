@@ -7,6 +7,8 @@
 
 require_once 'pub/Settings.php';
 
+$settings = new Settings();
+
 $ts_pw = posix_getpwuid(posix_getuid());
 $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
 $con = mysql_connect('enwiki-p.userdb.toolserver.org', $ts_mycnf['user'], $ts_mycnf['password'])
@@ -44,8 +46,8 @@ $sql = "CREATE TABLE IF NOT EXISTS $user_db.runs(
 mysql_query($sql,$con)
         or die('Could not create runs table: ' . mysql_error());
 
-$classes_string = "'" . implode("', '", $classes) . "'";
-$importances_string = "'" . implode("', '", $importances) . "'";
+$classes_string = "'" . implode("', '", $settings->classes) . "'";
+$importances_string = "'" . implode("', '", $settings->importances) . "'";
 
 $sql = "CREATE TABLE IF NOT EXISTS $user_db.articles(
             id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -189,7 +191,7 @@ while ($project = mysql_fetch_assoc($projects))
             WHERE id = $run_id";
     mysql_query($sql, $con);
 
-    foreach($monthlycleanupcountercats as $countercat)
+    foreach($settings->monthlycleanupcountercats as $countercat)
     {
         $thecountercat = str_replace(' ', '\_', "$countercat from %");
 
@@ -208,7 +210,7 @@ while ($project = mysql_fetch_assoc($projects))
                 or die("Could not load category $countercat for WikiProject $project_name: ". mysql_error());
     }//countercat
 
-    foreach(array_merge($cleanupcountercats, $monthlycleanupcountercats) as $countercat)
+    foreach(array_merge($settings->cleanupcountercats, $settings->monthlycleanupcountercats) as $countercat)
     {
         $thecountercat = str_replace(' ', '\_', $countercat);
 
@@ -237,7 +239,7 @@ while ($project = mysql_fetch_assoc($projects))
             or die ('Could not delete "clean" articles: '. mysql_error());
 
     //Set importance
-    foreach($importances as $importance)
+    foreach($settings->importances as $importance)
     {
         $theimportance = mysql_real_escape_string("${importance}-importance_${cat_name}_articles");
         $sql = "UPDATE $user_db.articles a
@@ -252,7 +254,7 @@ while ($project = mysql_fetch_assoc($projects))
     }
 
     //Set Class
-    foreach($classes as $class)
+    foreach($settings->classes as $class)
     {
         if ($class == 'Unassessed')
           $theclass = "${class}_${cat_name}_articles";
