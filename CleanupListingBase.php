@@ -71,7 +71,6 @@ abstract class CleanupListingBase
     $sql = "CREATE TABLE IF NOT EXISTS $this->user_db.articles(
               id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
               articleid INT(8) UNSIGNED,
-              talkid INT(8) UNSIGNED,
               article VARCHAR(255),
               run_id INT(8) UNSIGNED,
               FOREIGN KEY (run_id) REFERENCES runs(id)
@@ -91,7 +90,31 @@ abstract class CleanupListingBase
       or die('Could not create categories table: ' . mysql_error());
   }
 
-  protected abstract function GetGroupsToUpdate();
+  protected function LoadNewGroups()
+  { }
+
+  protected abstract function GetGroupsToUpdate()
+  {
+    $sql = "SELECT DISTINCT groups.id AS id, name
+            FROM $this->user_db.groups
+            LEFT JOIN $this->user_db.runs
+              ON groups.id = runs.group_id
+              AND DATEDIFF(NOW(), time) < 7
+            WHERE active = 1
+            AND (time IS NULL
+               OR force_create = 1)";
+    return mysql_query($sql, $this->con)
+            or die('Could not select groups: '. mysql_error());
+  }
+
+  protected function GetArticleCount()
+  {
+    $sql = "SELECT COUNT(*)
+            FROM $this->user_db.articles
+            WHERE run_id = $this->current_run_id";
+    return mysql_result(mysql_query($sql, $this->con), 0);
+  }
+
   protected abstract function ReadAdditionalGroupColumns($group);
   protected abstract function LoadArticles();
   protected function AdditionalGroupProcessing()
@@ -100,6 +123,7 @@ abstract class CleanupListingBase
   public function Update()
   {
     $this->CreateDatabase();
+    $this->LoadNewGroups();
 
     $groups = $this->GetGroupsToUpdate();
     while ($group = mysql_fetch_assoc($groups))
@@ -110,8 +134,8 @@ abstract class CleanupListingBase
 
       echo "Processing $this->current_group_name.\n";
 
-      $sql = "INSERT INTO $user_db.runs (group_id) VALUE ($group_id)";
-      mysql_query($sql,$con)
+      $sql = "INSERT INTO $this->user_db.runs (group_id) VALUE ($this->current_group_id)";
+      mysql_query($sql, $this->con)
         or die('Could not insert new run: ' . mysql_error());
 
       $this->current_run_id = mysql_insert_id();

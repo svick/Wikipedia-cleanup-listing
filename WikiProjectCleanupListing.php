@@ -23,6 +23,7 @@ class WikiProjectCleanupListing extends CleanupListingBase
     $importances_string = "'" . implode("', '", $this->settings->importances) . "'";
 
     $this->article_additional_columns = ",
+      talkid INT(8) UNSIGNED,
       importance ENUM($importances_string),
       class ENUM($classes_string)";
   }
@@ -44,14 +45,6 @@ class WikiProjectCleanupListing extends CleanupListingBase
   protected function ReadAdditionalGroupColumns($project)
   {
     $this->current_cat_name = $project['cat_name'] ? $project['cat_name'] : $project['name'];
-  }
-
-  protected function GetArticleCount()
-  {
-    $sql = "SELECT COUNT(*)
-            FROM $this->user_db.articles
-            WHERE run_id = $this->current_run_id";
-    return mysql_result(mysql_query($sql, $this->con), 0);
   }
 
   protected function GetInsertFromCategorySql($categoryarticles)
