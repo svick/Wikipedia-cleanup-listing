@@ -168,6 +168,12 @@ abstract class CleanupListingBase
 
       $this->AdditionalGroupProcessing();
 
+      $sql = "UPDATE $this->user_db.runs
+              SET finished = 1
+              WHERE id = $this->current_run_id";
+      mysql_query($sql, $this->con)
+        or die("Could not set run as finished for $this->current_group_name: " . mysql_error());
+
       $sql = "UPDATE $user_db.groups
               SET force_create = 0
               WHERE id = $this->current_group_id";

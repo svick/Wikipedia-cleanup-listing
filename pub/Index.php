@@ -29,7 +29,8 @@
                 WHERE active = 1
                 AND id IN (
                   SELECT project_id
-                  FROM runs)
+                  FROM runs
+                  WHERE finished = 1)
                 ORDER BY name";
         $projects = mysql_query($sql,$con);
         while ($project = mysql_fetch_assoc($projects))
