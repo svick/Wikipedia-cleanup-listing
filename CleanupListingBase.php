@@ -19,7 +19,7 @@ abstract class CleanupListingBase
   protected $current_group_name;
   protected $current_run_id;
 
-  protected function __construct($settings)
+  public function __construct($settings)
   {
     $this->settings = $settings;
 
@@ -93,7 +93,7 @@ abstract class CleanupListingBase
   protected function LoadNewGroups()
   { }
 
-  protected abstract function GetGroupsToUpdate()
+  protected function GetGroupsToUpdate()
   {
     $sql = "SELECT DISTINCT groups.id AS id, name
             FROM $this->user_db.groups
@@ -141,9 +141,12 @@ abstract class CleanupListingBase
       $this->current_run_id = mysql_insert_id();
 
       if (!$this->LoadArticles())
+      {
+        echo "Could not load articles for $this->current_group_name.\n";
         continue;
+      }
 
-      foreach($settings->monthlycleanupcountercats as $countercat)
+      foreach($this->settings->monthlycleanupcountercats as $countercat)
       {
         $thecountercat = str_replace(' ', '\_', "$countercat from %");
 
@@ -162,7 +165,7 @@ abstract class CleanupListingBase
           or die("Could not load category $countercat for $this->current_group_name: ". mysql_error());
       }
 
-      foreach(array_merge($settings->cleanupcountercats, $settings->monthlycleanupcountercats) as $countercat)
+      foreach(array_merge($this->settings->cleanupcountercats, $this->settings->monthlycleanupcountercats) as $countercat)
       {
         $thecountercat = str_replace(' ', '\_', $countercat);
 
@@ -198,7 +201,7 @@ abstract class CleanupListingBase
       mysql_query($sql, $this->con)
         or die("Could not set run as finished for $this->current_group_name: " . mysql_error());
 
-      $sql = "UPDATE $user_db.groups
+      $sql = "UPDATE $this->user_db.groups
               SET force_create = 0
               WHERE id = $this->current_group_id";
       mysql_query($sql, $this->con)

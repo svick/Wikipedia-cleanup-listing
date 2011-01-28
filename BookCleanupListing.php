@@ -16,8 +16,8 @@ class BookCleanupListing extends CleanupListingBase
 
   protected function LoadNewGroups()
   {
-    $sql = "INSERT IGNORE INTO $this->user_db.groups (name)
-            SELECT page_title
+    $sql = "INSERT IGNORE INTO $this->user_db.groups (name, pageid)
+            SELECT REPLACE(page_title, '_', ' '), page_id
             FROM page
             WHERE page_namespace = 108
               AND page_is_redirect = 0";
@@ -25,7 +25,7 @@ class BookCleanupListing extends CleanupListingBase
       or die('Could not add books: ' . mysql_error());
   }
 
-  protected abstract function GetGroupsToUpdate()
+  protected function GetGroupsToUpdate()
   {
     $sql = "SELECT DISTINCT groups.id AS id, name, pageid
             FROM $this->user_db.groups
@@ -35,8 +35,9 @@ class BookCleanupListing extends CleanupListingBase
             WHERE active = 1
             AND (time IS NULL
                OR force_create = 1)";
-    return mysql_query($sql, $this->con)
+    $res = mysql_query($sql, $this->con)
             or die('Could not select groups: '. mysql_error());
+    return $res;
   }
 
   protected function ReadAdditionalGroupColumns($group)
@@ -51,10 +52,12 @@ class BookCleanupListing extends CleanupListingBase
             FROM pagelinks
             JOIN page
               ON page_title = pl_title
-              AND page_namespace = pl.namespace
+              AND page_namespace = pl_namespace
             WHERE pl_from = $this->current_pageid
               AND pl_namespace = 0";
     mysql_query($sql, $this->con)
             or die('Could not load book '.$this->current_group_name." articles: ". mysql_error());
+
+    return $this->GetArticleCount() > 0;
   }
 }

@@ -126,7 +126,7 @@ class WikiProjectCleanupListing extends CleanupListingBase
   protected function AdditionalGroupProcessing()
   {
     //Set importance
-    foreach($settings->importances as $importance)
+    foreach($this->settings->importances as $importance)
     {
         $theimportance = mysql_real_escape_string("${importance}-importance_{$this->current_cat_name}_articles");
         $sql = "UPDATE $this->user_db.articles a
@@ -141,7 +141,7 @@ class WikiProjectCleanupListing extends CleanupListingBase
     }
 
     //Set Class
-    foreach($settings->classes as $class)
+    foreach($this->settings->classes as $class)
     {
         if ($class == 'Unassessed')
           $theclass = "${class}_{$this->current_cat_name}_articles";

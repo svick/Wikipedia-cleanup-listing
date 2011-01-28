@@ -5,6 +5,7 @@
 //Version .1
 
 require_once 'pub/Settings.php';
+require_once 'WikiProjectCleanupListing.php';
 
 $settings = new Settings();
 

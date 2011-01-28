@@ -4,6 +4,7 @@
 //Licensed under Simplified BSD license
 
 require_once 'pub/Settings.php';
+require_once 'BookCleanupListing.php';
 
 $settings = new Settings();
 
