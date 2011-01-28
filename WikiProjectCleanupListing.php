@@ -22,7 +22,7 @@ class WikiProjectCleanupListing extends CleanupListingBase
     $classes_string = "'" . implode("', '", $this->settings->classes) . "'";
     $importances_string = "'" . implode("', '", $this->settings->importances) . "'";
 
-    $article_additional_columns = ",
+    $this->article_additional_columns = ",
       importance ENUM($importances_string),
       class ENUM($classes_string)";
   }
