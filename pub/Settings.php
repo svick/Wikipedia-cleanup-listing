@@ -19,7 +19,7 @@ $monthlycleanupcountercats = array(
   'Articles with dead external links',
   'Dead-end pages',
   'Articles with disputed statements',
-  'Articles to be expanded by month',
+  'Articles to be expanded',
   'Articles needing expert attention by month',
   'Wikipedia external links cleanup',
   'Articles that need to differentiate between fact and fiction',
@@ -79,7 +79,8 @@ $monthlycleanupcountercats = array(
   'Wikipedia references cleanup',
   'Vague or ambiguous time',
   'Articles with improper non-free content (lists)',
-  '1911 Britannica articles needing updates');
+  '1911 Britannica articles needing updates',
+  'Incomplete lists');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
@@ -94,7 +95,9 @@ $cleanupcountercats = array(
   'Proposed moves',
   'Pages with DOIs inactive since 2008',
   'Pages with DOIs inactive since 2009',
-  'Pages with DOIs inactive since 2010');
+  'Pages with DOIs inactive since 2010',
+  'Pages with DOIs inactive since 2011',
+  'All articles needing expert attention');
 $classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed", "NA", "Book", "Category", "Current", "Disambig", "File", "Future", "Merge", "Needed", "Portal", "Project", "Redirect", "Template");
 $importances = array("Top", "High", "Mid", "Low", "Unknown", "NA", "Bottom", "No");
 
