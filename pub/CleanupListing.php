@@ -14,59 +14,62 @@
         $user_name = $ts_mycnf['user'];
         unset($ts_mycnf, $ts_pw);
 
+        $listing = mysql_real_escape_string($_GET['listing']);
         $user_db = "u_${user_name}_cleanup";
+        if ($listing)
+          $user_db = "u_${user_name}_${listing}_cleanup";
 
         mysql_select_db($user_db, $con)
                 or die('Could not select db: ' . mysql_error());
 
-        $project_name = $_GET['project'];
+        $group_name = $_GET['group'];
 
-        if ($project_name == null)
-                die('Project was not set.');
+        if ($group_name == null)
+                die('group was not set.');
 
-        $project_name = str_replace(' ', '_', $project_name);
+        $group_name = str_replace(' ', '_', $project_name);
 
-        $project_name_sql = mysql_real_escape_string($project_name);
-        $project_name_human = str_replace('_', ' ', $project_name);
+        $group_name_sql = mysql_real_escape_string($project_name);
+        $group_name_human = str_replace('_', ' ', $project_name);
 
         $sql = "SELECT
-                    projects.id AS id,
-                    projects.is_wikiproject AS is_wikiproject,
+                    groups.id AS id,
+                    groups.is_wikiproject AS is_wikiproject,
                     runs.id AS run_id,
                     runs.time AS time,
                     runs.total_articles AS total_articles,
                     (SELECT COUNT(*)
                      FROM articles
                      WHERE run_id = runs.id) AS cleanup_articles
-                FROM projects
-                JOIN runs ON projects.id = runs.project_id
-                WHERE name = '$project_name_sql'
+                FROM groups
+                JOIN runs ON groups.id = runs.project_id
+                WHERE name = '$group_name_sql'
                 AND runs.finished = 1
                 ORDER BY runs.time DESC
                 LIMIT 1";
-        $project = mysql_fetch_assoc(mysql_query($sql,$con))
-                or die('Could not select project: ' . mysql_error());
-        $project_id = $project['id'];
-        $run_id = $project['run_id'];
-        $run_time = $project['time'];
-        $is_wikiproject = $project['is_wikiproject'];
-        $total_articles = $project['total_articles'];
-        $cleanup_articles = $project['cleanup_articles'];
+        $group = mysql_fetch_assoc(mysql_query($sql,$con))
+                or die('Could not select group: ' . mysql_error());
+        $group_id = $group['id'];
+        $run_id = $group['run_id'];
+        $run_time = $group['time'];
+        $is_wikigroup = $project['is_wikiproject'];
+        $total_articles = $group['total_articles'];
+        $cleanup_articles = $group['cleanup_articles'];
 
-        if ($is_wikiproject)
+        if ($is_wikigroup)
         {
-            $project_name = "WikiProject_$project_name";
-            $project_name_human = "WikiProject $project_name_human";
+            $group_name = "WikiProject_$project_name";
+            $group_name_human = "WikiProject $project_name_human";
         }
 
         $table_writer = TableWriterFactory::Create($_GET['format']);
-        $table_writer->WriteHeader("Cleanup listing for $project_name_human");
-        $link = $table_writer->FormatWikiLink("Wikipedia:$project_name", "$project_name_human");
+        $table_writer->WriteHeader("Cleanup listing for $group_name_human");
+        $link = $table_writer->FormatWikiLink("Wikipedia:$group_name", "$project_name_human");
         $table_writer->WriteText("This is a cleanup listing for $link generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
         if ($total_articles)
         {
             $cleanup_percentage = sprintf('%01.1f', $cleanup_articles / $total_articles * 100);
-            $table_writer->WriteText("Of the $total_articles articles in this project $cleanup_articles or $cleanup_percentage % are marked for cleanup.");
+            $table_writer->WriteText("Of the $total_articles articles in this group $cleanup_articles or $cleanup_percentage % are marked for cleanup.");
         }
         $table_writer->WriteTableHeader(array(
                 new Column('Article', true),

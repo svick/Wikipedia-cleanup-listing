@@ -13,34 +13,37 @@
         $user_name = $ts_mycnf['user'];
         unset($ts_mycnf, $ts_pw);
 
+        $listing = mysql_real_escape_string($_GET['listing']);
         $user_db = "u_${user_name}_cleanup";
+        if ($listing)
+          $user_db = "u_${user_name}_${listing}_cleanup";
 
         mysql_select_db($user_db, $con)
                 or die('Could not select db: ' . mysql_error());
 
         $table_writer = TableWriterFactory::Create('html');
-        $table_writer->WriteHeader("Cleanup listings for WikiProjects");
-        $table_writer->WriteText("This is a list of cleanup listings for various WikiProjects.");
+        $table_writer->WriteHeader("Cleanup listings");
+        $table_writer->WriteText("This is a list of cleanup listings for ???.");
 ?>
     <ul>
 <?
         $sql = "SELECT name
-                FROM projects
+                FROM groups
                 WHERE active = 1
                 AND id IN (
-                  SELECT project_id
+                  SELECT group_id
                   FROM runs
                   WHERE finished = 1)
                 ORDER BY name";
-        $projects = mysql_query($sql,$con);
-        while ($project = mysql_fetch_assoc($projects))
+        $groups = mysql_query($sql,$con);
+        while ($group = mysql_fetch_assoc($groups))
         {
-          $encoded_name = urlencode($project['name']);
+          $encoded_name = urlencode($group['name']);
 ?>
       <li>
-        <?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name", $project['name']) ?>
-        (<?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name&format=csv", 'CSV') ?>,
-        <?= $table_writer->FormatLink("CleanupListingByCat.php?project=$encoded_name", 'by cat') ?>)
+        <?= $table_writer->FormatLink("CleanupListing.php?group=$encoded_name", $group['name']) ?>
+        (<?= $table_writer->FormatLink("CleanupListing.php?group=$encoded_name&format=csv", 'CSV') ?>,
+        <?= $table_writer->FormatLink("CleanupListingByCat.php?group=$encoded_name", 'by cat') ?>)
       </li>
 <?
         }
