@@ -38,7 +38,7 @@
           $encoded_name = urlencode($project['name']);
 ?>
       <li>
-        <?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name", $project['name']) ?>
+        <?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name", str_replace('_', ' ', $project['name'])) ?>
         (<?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name&format=csv", 'CSV') ?>,
         <?= $table_writer->FormatLink("CleanupListingByCat.php?project=$encoded_name", 'by cat') ?>)
       </li>
