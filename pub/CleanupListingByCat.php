@@ -134,7 +134,7 @@
                 $categories = CreateCategoryString($category_rows);
 
                 $table_writer->WriteRow(array(
-                  $table_writer->FormatLink("http://en.wikipedia.org/wiki/{$article['article']}", str_replace('_', ' ', $article['article'])),
+                  $table_writer->FormatWikiLink(str_replace('_', ' ', $article['article'])),
                   $article['importance'],
                   $article['class'],
                   $article['month'],
