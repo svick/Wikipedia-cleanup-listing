@@ -40,7 +40,7 @@ class WikicodeTableWriter implements ITableWriter
 
   function WriteTableHeaderInternal($columns)
   {
-    $this->Text .= "\n{| class=\"wikitable\"\n|-\n";
+    $this->Text .= "\n{| class=\"wikitable sortable\"\n|-\n";
 
     $first = true;
 
