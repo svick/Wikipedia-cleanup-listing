@@ -2,6 +2,7 @@
 
 require_once 'HtmlTableWriter.php';
 require_once 'CsvTableWriter.php';
+require_once 'WikicodeTableWriter.php';
 
 class TableWriterFactory
 {
@@ -9,9 +10,11 @@ class TableWriterFactory
   {
     switch($format)
     {
-    case "csv":
+    case 'csv':
       return new CsvTableWriter();
-    case "html":
+    case 'wikicode':
+      return new WikicodeTableWriter();
+    case 'html':
     default:
       return new HtmlTableWriter();
     }
