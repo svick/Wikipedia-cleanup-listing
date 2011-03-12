@@ -5,6 +5,7 @@
 //For Cleanup Listing
 
         require_once 'TableWriterFactory.php';
+        require_once 'Functions.php';
 
         $ts_pw = posix_getpwuid(posix_getuid());
         $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
@@ -28,16 +29,30 @@
         $project_name_sql = mysql_real_escape_string($project_name);
         $project_name_human = str_replace('_', ' ', $project_name);
 
-        $sql = "SELECT projects.id AS id, projects.is_wikiproject AS is_wikiproject, runs.id AS run_id, runs.time AS time
+        $sql = "SELECT
+                    projects.id AS id,
+                    projects.is_wikiproject AS is_wikiproject,
+                    runs.id AS run_id,
+                    runs.time AS time,
+                    runs.total_articles AS total_articles,
+                    (SELECT COUNT(*)
+                     FROM articles
+                     WHERE run_id = runs.id) AS cleanup_articles
                 FROM projects
-                JOIN runs ON projects.last_run_id = runs.id
-                WHERE name = '$project_name_sql'";
+                JOIN runs ON projects.id = runs.project_id
+                WHERE name = '$project_name_sql'
+                AND runs.finished = 1
+                ORDER BY runs.time DESC
+                LIMIT 1";
         $project = mysql_fetch_assoc(mysql_query($sql,$con))
                 or die('Could not select project: ' . mysql_error());
         $project_id = $project['id'];
         $run_id = $project['run_id'];
         $run_time = $project['time'];
         $is_wikiproject = $project['is_wikiproject'];
+        $total_articles = $project['total_articles'];
+        $cleanup_articles = $project['cleanup_articles'];
+
         if ($is_wikiproject)
         {
             $project_name = "WikiProject_$project_name";
@@ -48,6 +63,11 @@
         $table_writer->WriteHeader("Cleanup listing for $project_name_human");
         $link = $table_writer->FormatWikiLink("Wikipedia:$project_name", "$project_name_human");
         $table_writer->WriteText("This is a cleanup listing for $link generated on " . date('j F Y, G:i:s e', strtotime($run_time)) . ".");
+        if ($total_articles)
+        {
+            $cleanup_percentage = sprintf('%01.1f', $cleanup_articles / $total_articles * 100);
+            $table_writer->WriteText("Of the $total_articles articles in this project $cleanup_articles or $cleanup_percentage % are marked for cleanup.");
+        }
         $table_writer->WriteTableHeader(array(
                 new Column('Article', true),
                 new Column('Importance', true),
@@ -67,7 +87,6 @@
         $sql = "SELECT id, article, importance, class, (SELECT COUNT(*) FROM categories WHERE articles.id = categories.article_id) AS count
                 FROM articles
                 WHERE run_id = $run_id
-                AND project_id = $project_id
                 ORDER BY $sort";
         $articles = mysql_query($sql,$con)
           or die('Could not load articles: ' . mysql_error());
@@ -79,12 +98,8 @@
                     WHERE article_id = {$article['id']}";
             $category_rows = mysql_query($sql,$con)
               or die('Could not load categories: ' . mysql_error());
-            $categories = array();
-            while ($category = mysql_fetch_assoc($category_rows))
-            {
-              $month_name = date('F', mktime(0, 0, 0, $category['month'], 1));
-              $categories[] = "{$category['name']} ($month_name {$category['year']})";
-            }
+
+            $categories = CreateCategoryString($category_rows);
 
             $table_writer->WriteRow(array(
               $table_writer->FormatLink("http://en.wikipedia.org/wiki/{$article['article']}", str_replace('_', ' ', $article['article'])),

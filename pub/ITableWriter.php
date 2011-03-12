@@ -22,6 +22,7 @@ class Column
 {
   public $Name;
   public $Sortable;
+  public $Empty;
 
   function __construct($name, $sortable = false)
   {

@@ -1,6 +1,6 @@
 <?php
 
-$cleanupcountercats = array(
+$monthlycleanupcountercats = array(
   'Accuracy disputes',
   'Articles lacking page references',
   'BLP articles lacking sources',
@@ -11,7 +11,6 @@ $cleanupcountercats = array(
   'Wikipedia articles needing clarification',
   'Wikipedia pages needing cleanup',
   'Articles needing cleanup',
-  'Statements with common sense issues',
   'Wikipedia articles with possible conflicts of interest',
   'Wikipedia articles needing context',
   'Wikipedia articles needing copy edit',
@@ -21,7 +20,6 @@ $cleanupcountercats = array(
   'Dead-end pages',
   'Articles with disputed statements',
   'Articles to be expanded',
-  'Articles to be expanded by month',
   'Articles needing expert attention by month',
   'Wikipedia external links cleanup',
   'Articles that need to differentiate between fact and fiction',
@@ -68,7 +66,38 @@ $cleanupcountercats = array(
   'Articles with specifically marked weasel-worded phrases',
   'Articles that need to be wikified',
   'Wikipedia articles needing cleanup',
-  'Articles needing the year an event occurred');
+  'Articles needing the year an event occurred',
+  'Articles with obsolete information',
+  'Wikipedia articles needing reorganization',
+  'Cleanup section',
+  'Articles with close paraphrasing of public domain sources',
+  'Wikipedia list cleanup',
+  'Articles needing more viewpoints',
+  'Articles requiring tables',
+  'Articles with limited geographic scope',
+  'Wikipedia laundry list cleanup',
+  'Wikipedia references cleanup',
+  'Vague or ambiguous time',
+  'Articles with improper non-free content (lists)',
+  '1911 Britannica articles needing updates',
+  'Incomplete lists');
+$cleanupcountercats = array(
+  'Tree of Life cleanup',
+  'Animals cleanup',
+  'Invalid conservation status',
+  'Missing taxobox',
+  'Plant articles needing a taxobox',
+  'Redundant taxobox',
+  'Taxoboxes needing a status system parameter',
+  'Taxoboxes with an invalid color',
+  'Taxoboxes with an unrecognised status system',
+  'All articles needing coordinates',
+  'Proposed moves',
+  'Pages with DOIs inactive since 2008',
+  'Pages with DOIs inactive since 2009',
+  'Pages with DOIs inactive since 2010',
+  'Pages with DOIs inactive since 2011',
+  'All articles needing expert attention');
 $classes = array("FA", "A", "GA", "B", "C", "Start", "Stub", "FL", "List", "Unassessed", "NA", "Book", "Category", "Current", "Disambig", "File", "Future", "Merge", "Needed", "Portal", "Project", "Redirect", "Template");
 $importances = array("Top", "High", "Mid", "Low", "Unknown", "NA", "Bottom", "No");
 
