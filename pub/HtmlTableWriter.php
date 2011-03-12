@@ -34,11 +34,12 @@ class HtmlTableWriter implements ITableWriter
 <?
   }
 
-  public function WriteSection($name)
+  public function WriteSection($name, $level = 1)
   {
     $this->current_section = $name;
+    $level = $level + 1;
 ?>
-    <h2 id="<?= $name ?>"><?= $name ?></h2>
+    <h<?= $level ?> id="<?= $name ?>"><?= $name ?></h<?= $level ?>>
 <?
   }
 

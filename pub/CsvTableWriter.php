@@ -12,10 +12,23 @@ class CsvTableWriter implements ITableWriter
   public function WriteText($text)
   { }
 
-  public function WriteSection($name)
+  public function WriteSection($name, $level = 1)
   {
+    $underline_char = null;
+    switch ($level)
+    {
+    case 1:
+      $underline_char = '=';
+      break;
+    case 2:
+      $underline_char = '-';
+      break;
+    }
+
     echo "$name\n";
-    echo str_repeat('=', strlen($name)) . "\n";
+    if ($underline_char)
+      echo str_repeat($underline_char, strlen($name));
+    echo "\n";
   }
 
   public function WriteTableHeader($columns)

@@ -4,7 +4,7 @@ interface ITableWriter
 {
   public function WriteHeader($title);
   public function WriteText($text);
-  public function WriteSection($name);
+  public function WriteSection($name, $level = 1);
   public function WriteTableHeader($columns);
   public function WriteRow($cells);
   public function WriteTableFooter();
