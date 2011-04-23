@@ -80,7 +80,9 @@ $monthlycleanupcountercats = array(
   'Vague or ambiguous time',
   'Articles with improper non-free content (lists)',
   '1911 Britannica articles needing updates',
-  'Incomplete lists');
+  'Incomplete lists',
+  'Articles with improper non-free content',
+  'Pages with several capitalization mistakes');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
