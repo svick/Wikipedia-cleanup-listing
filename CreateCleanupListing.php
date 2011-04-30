@@ -76,6 +76,7 @@ $sql = "SELECT DISTINCT projects.id AS id, name, cat_name
         FROM $user_db.projects
         LEFT JOIN $user_db.runs
             ON projects.id = runs.project_id
+            AND runs.finished = 1
             AND DATEDIFF(NOW(), time) < 7
         WHERE active = 1
         AND (time IS NULL
