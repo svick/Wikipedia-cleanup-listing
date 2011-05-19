@@ -82,7 +82,8 @@ $monthlycleanupcountercats = array(
   '1911 Britannica articles needing updates',
   'Incomplete lists',
   'Articles with improper non-free content',
-  'Pages with several capitalization mistakes');
+  'Pages with several capitalization mistakes',
+  'Disambiguation pages in need of cleanup');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
