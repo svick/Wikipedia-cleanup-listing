@@ -83,7 +83,9 @@ $monthlycleanupcountercats = array(
   'Incomplete lists',
   'Articles with improper non-free content',
   'Pages with several capitalization mistakes',
-  'Disambiguation pages in need of cleanup');
+  'Disambiguation pages in need of cleanup',
+  'Articles about possible neologisms',
+  'Incomplete disambiguation');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
