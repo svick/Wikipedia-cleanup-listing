@@ -65,7 +65,6 @@ $monthlycleanupcountercats = array(
   'Articles with weasel words',
   'Articles with specifically marked weasel-worded phrases',
   'Articles that need to be wikified',
-  'Wikipedia articles needing cleanup',
   'Articles needing the year an event occurred',
   'Articles with obsolete information',
   'Wikipedia articles needing reorganization',
