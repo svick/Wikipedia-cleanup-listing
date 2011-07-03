@@ -86,7 +86,9 @@ $monthlycleanupcountercats = array(
   'Articles about possible neologisms',
   'Incomplete disambiguation',
   'Articles with links needing disambiguation',
-  'Articles with disproportional geographic scope');
+  'Articles with disproportional geographic scope',
+  'Wikipedia articles containing buzzwords',
+  'Vague or ambiguous geographic scope');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
