@@ -89,7 +89,8 @@ $monthlycleanupcountercats = array(
   'Articles with disproportional geographic scope',
   'Wikipedia articles containing buzzwords',
   'Vague or ambiguous geographic scope',
-  'Suspected copyright infringements without a source');
+  'Suspected copyright infringements without a source',
+  'Pages with excessive dablinks');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
