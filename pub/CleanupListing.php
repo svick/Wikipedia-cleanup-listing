@@ -37,7 +37,11 @@
                     runs.total_articles AS total_articles,
                     (SELECT COUNT(*)
                      FROM articles
-                     WHERE run_id = runs.id) AS cleanup_articles
+                     WHERE run_id = runs.id) AS cleanup_articles,
+                    (SELECT COUNT(*)
+                     FROM articles
+                     JOIN categories on articles.id = categories.article_id
+                     WHERE run_id = runs.id) AS issues
                 FROM projects
                 JOIN runs ON projects.id = runs.project_id
                 WHERE name = '$project_name_sql'
@@ -52,6 +56,7 @@
         $is_wikiproject = $project['is_wikiproject'];
         $total_articles = $project['total_articles'];
         $cleanup_articles = $project['cleanup_articles'];
+        $issues = $project['issues'];
 
         if ($is_wikiproject)
         {
@@ -66,7 +71,7 @@
         if ($total_articles)
         {
             $cleanup_percentage = sprintf('%01.1f', $cleanup_articles / $total_articles * 100);
-            $table_writer->WriteText("Of the $total_articles articles in this project $cleanup_articles or $cleanup_percentage % are marked for cleanup.");
+            $table_writer->WriteText("Of the $total_articles articles in this project $cleanup_articles or $cleanup_percentage % are marked for cleanup, with $issues issues in total.");
         }
         $table_writer->WriteTableHeader(array(
                 new Column('Article', true),
