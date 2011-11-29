@@ -6,9 +6,11 @@
 </head>
 <body>
 <script type="text/javascript">
-    if(document.location.href != "https://toolserver.org/~svick/CleanupListing/ListingAdd.html")
-        document.writeln("<h2 style='color:red'>Please use a secure connection!</h2>");
-        document.writeln("<p style='color:red'>Please use: <a href='https://toolserver.org/~svick/CleanupListing/ListingAdd.html'>https://toolserver.org/~svick/CleanupListing/ListingAdd.html</a></p> ")
+  if(document.location.protocol != "https:") {
+    var new_url = document.location.href.replace(/^http/, 'https');
+    document.writeln("<h2 style='color:red'>Please use a secure connection!</h2>");
+    document.writeln("<p style='color:red'>Please use: <a href='" + new_url + "'>" + new_url + "</a></p>");
+  }
 </script>
 <fieldset style="width:700px">
     <legend>Modify Cleanup Listing</legend>
