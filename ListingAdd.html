@@ -1,18 +1,74 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
     <title>Cleanup Listing Add</title>
 </head>
 <body>
 <script type="text/javascript">
-    if(document.location.href != "https://toolserver.org/~svick/CleanupListing/ListingAdd.html")
-        document.writeln("<h2 style='color:red'>Please use a secure connection!</h2>");
-        document.writeln("<p style='color:red'>Please use: <a href='https://toolserver.org/~svick/CleanupListing/ListingAdd.html'>https://toolserver.org/~svick/CleanupListing/ListingAdd.html</a></p> ")
+  if(document.location.protocol != "https:") {
+    var new_url = document.location.href.replace(/^http/, 'https');
+    document.writeln("<h2 style='color:red'>Please use a secure connection!</h2>");
+    document.writeln("<p style='color:red'>Please use: <a href='" + new_url + "'>" + new_url + "</a></p>");
+  }
 </script>
+<p>Instructions at: <a href="https://en.wikipedia.org/wiki/User:Svick/WikiProject_cleanup_listing/Add">User:Svick/WikiProject_cleanup_listing/Add</a> on Wikipedia.</p>
 <fieldset style="width:700px">
     <legend>Modify Cleanup Listing</legend>
-    <form action="ListingAdd.php" method="post">
+    <noscript><span style="color:red"><b>You should have javascript enabled to check your submission!</b></span> </noscript>
+    <script type="text/javascript">
+
+        function mreplace(str, match, repl) {//rather than regex
+            do {
+                str = str.replace(match, repl);
+            } while(str.indexOf(match) != -1);
+            return str;
+        }
+        function writeln(input)
+        {
+            write(input + "<br/>");
+        }
+        function write(input)
+        {
+            document.getElementById("fixoutput").innerHTML += input;
+        }
+        function check()
+        {
+            //clear last output
+            document.getElementById("fixoutput").innerHTML = "";
+
+            //check name
+            var name = document.getElementById("name");
+            var namestart = name.value;//save original value
+            if(name.value.substr(0,12) == "WikiProject ")//Remove WikiProject
+                name.value = name.value.substr(12);
+            name.value = mreplace(name.value," ","_");//Replace " " with "_"
+
+            //check cat
+            var cat = document.getElementById("cat_name");
+            var catstart = cat.value;
+            if(cat.value.substr(0,10) == "Category: ")//Remove Category:
+                cat.value = cat.value.substr(10);
+            cat.value = mreplace(cat.value," ","_");//Replace " " with "_"
+
+            //write output
+            var change = false;
+            if(name.value != namestart)
+            {
+                writeln("Name '" + namestart + "' changed to '" + name.value + "'");
+                change = true;
+            }
+            if(cat.value != catstart)
+            {
+                writeln("Cat '" + catstart + "' changed to '" + cat.value + "'");
+                change = true;
+            }
+            if(change) //could do ~
+                writeln("Please review the changes before submitting.");
+            return !change;
+        }
+    </script>
+    <form action="ListingAdd.php" method="post" onsubmit="return check();">
         <b>Login:</b>
         <br/>
         User: <input style='width:500px' type="text" name="user" /><br />
@@ -20,14 +76,15 @@
         <br/>
         <b>Create Listing:</b>
         <br/>
-        Project name: <input style='width:500px' type="text" name="name" /><br />
-        Category (if not project cat):<input style='width:500px' type="text" name="cat_name" /><br />
-        WikiProject:<input type="checkbox" checked="checked" name="is_wikiproject" /><br />
+        Project name: <input style='width:500px' type="text" name="name" id="name"/><br />
+        Category (if not project cat):<input style='width:500px' type="text" name="cat_name" id="cat_name"/><br />
+        WikiProject:<input type="checkbox" checked="checked" name="is_wikiproject" id="is_wikiproject"/><br />
         <br/>
         <span style="color:green;">Please review before submitting! Everything is case-sensitve!</span><br/>
         <input type='submit'/>
     </form>
 </fieldset>
+<div id="fixoutput" style="color:blue;"></div>
 <p style="text-align:center;">
     Authors:
     <a href="http://en.wikipedia.org/wiki/User:Svick">Svick</a>,
