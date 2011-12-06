@@ -50,8 +50,8 @@
             //check cat
             var cat = document.getElementById("cat_name");
             var catstart = cat.value;
-            if(cat.value.substr(0,10) == "Category: ")//Remove Category:
-                cat.value = cat.value.substr(10);
+            if(cat.value.substr(0,9) == "Category:")//Remove Category:
+                cat.value = cat.value.substr(9).trim();
             cat.value = mreplace(cat.value," ","_");//Replace " " with "_"
 
             //write output
