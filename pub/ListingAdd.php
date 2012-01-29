@@ -27,7 +27,7 @@ else
 
 $is_wikiproject = isset($_POST["is_wikiproject"]) ? 1 : 0;
 
-$cat_name = 'NULL';
+$cat_name = NULL;
 if(!empty($_POST["cat_name"]))
     $cat_name = mysql_real_escape_string($_POST["cat_name"]);
 
