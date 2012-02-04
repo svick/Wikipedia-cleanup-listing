@@ -90,7 +90,11 @@ $monthlycleanupcountercats = array(
   'Wikipedia articles containing buzzwords',
   'Vague or ambiguous geographic scope',
   'Suspected copyright infringements without a source',
-  'Pages with excessive dablinks');
+  'Pages with excessive dablinks',
+  'Wikipedia articles without plot summaries',
+  'Wikipedia red link cleanup',
+  'Autobiographical articles',
+  'NRHP articles with dead external links');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
