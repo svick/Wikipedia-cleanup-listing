@@ -98,16 +98,10 @@ while ($project = mysql_fetch_assoc($projects))
 
     $run_id = mysql_insert_id();
 
-    //Load articles and pageid from WikiProject
+    $category_queries = array();
+
     $categoryarticles = mysql_real_escape_string(ucfirst("${cat_name}_articles_by_quality"));
     $sql = "
-        INSERT INTO $user_db.articles
-        (
-            articleid,
-            talkid,
-            article,
-            run_id
-        )
         SELECT DISTINCT article.page_id, talk.page_id, article.page_title, $run_id
         FROM page AS article
         JOIN page AS talk ON article.page_title = talk.page_title
@@ -118,32 +112,43 @@ while ($project = mysql_fetch_assoc($projects))
         AND article.page_namespace = 0
         AND talk.page_namespace = 1
         AND cat.page_namespace = 14";
-    mysql_query($sql,$con)
-            or die('Could not load WikiProject '.$project_name." articles: ". mysql_error());
+    $category_queries[] = $sql;
 
-    $sql = "SELECT COUNT(*)
-            FROM $user_db.articles
-            WHERE run_id = $run_id";
-    $count = mysql_result(mysql_query($sql,$con), 0);
+    $categoryarticles = mysql_real_escape_string("WikiProject_${cat_name}_articles");
+    $sql = "
+        SELECT article.page_id, talk.page_id, article.page_title, $run_id
+        FROM page AS article
+        JOIN page AS talk ON article.page_title = talk.page_title
+        JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
+        WHERE cl.cl_to = '$categoryarticles'
+        AND article.page_namespace = 0
+        AND talk.page_namespace = 1";
+    $category_queries[] = $sql;
 
-    if ($count == 0)
+    $categoryarticles = mysql_real_escape_string($cat_name);
+    $sql = "
+        SELECT article.page_id, talk.page_id, article.page_title, $run_id
+        FROM page AS article
+        JOIN page AS talk ON article.page_title = talk.page_title
+        JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
+        WHERE cl.cl_to = '$categoryarticles'
+        AND article.page_namespace = 0
+        AND talk.page_namespace = 1";
+    $category_queries[] = $sql;
+
+    foreach($category_queries as $category_query)
     {
-      $categoryarticles = mysql_real_escape_string("WikiProject_${cat_name}_articles");
       $sql = "
-          INSERT INTO $user_db.articles
-          (
-              articleid,
-              talkid,
-              article,
-              run_id
-          )
-          SELECT article.page_id, talk.page_id, article.page_title, $run_id
-          FROM page AS article
-          JOIN page AS talk ON article.page_title = talk.page_title
-          JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
-          WHERE cl.cl_to = '$categoryarticles'
-          AND article.page_namespace = 0
-          AND talk.page_namespace = 1";
+        INSERT INTO $user_db.articles
+        (
+            articleid,
+            talkid,
+            article,
+            run_id
+        )
+        $category_query
+        ";
+
       mysql_query($sql,$con)
               or die('Could not load WikiProject '.$project_name." articles: ". mysql_error());
 
@@ -152,38 +157,14 @@ while ($project = mysql_fetch_assoc($projects))
               WHERE run_id = $run_id";
       $count = mysql_result(mysql_query($sql,$con), 0);
 
-      if ($count == 0)
-      {
-        $categoryarticles = mysql_real_escape_string($cat_name);
-        $sql = "
-            INSERT INTO $user_db.articles
-            (
-                articleid,
-                talkid,
-                article,
-                run_id
-            )
-            SELECT article.page_id, talk.page_id, article.page_title, $run_id
-            FROM page AS article
-            JOIN page AS talk ON article.page_title = talk.page_title
-            JOIN categorylinks AS cl ON talk.page_id = cl.cl_from
-            WHERE cl.cl_to = '$categoryarticles'
-            AND article.page_namespace = 0
-            AND talk.page_namespace = 1";
-        mysql_query($sql,$con)
-                or die('Could not load WikiProject '.$project_name." articles: ". mysql_error());
+      if ($count > 0)
+        break;
+    }
 
-        $sql = "SELECT COUNT(*)
-                FROM $user_db.articles
-                WHERE run_id = $run_id";
-        $count = mysql_result(mysql_query($sql,$con), 0);
-
-        if ($count == 0)
-        {
-          echo "Could not get articles for WikiProject $project_name.\n";
-          continue;
-        }
-      }
+    if ($count == 0)
+    {
+      echo "Could not get articles for WikiProject $project_name.\n";
+      continue;
     }
 
     $sql = "UPDATE $user_db.runs
