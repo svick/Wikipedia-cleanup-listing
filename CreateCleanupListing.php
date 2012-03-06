@@ -136,6 +136,16 @@ while ($project = mysql_fetch_assoc($projects))
         AND talk.page_namespace = 1";
     $category_queries[] = $sql;
 
+    $sql = "
+        SELECT article.page_id, talk.page_id, article.page_title, $run_id
+        FROM page AS article
+        JOIN page AS talk ON article.page_title = talk.page_title
+        JOIN categorylinks AS cl ON article.page_id = cl.cl_from
+        WHERE cl.cl_to = '$categoryarticles'
+        AND article.page_namespace = 0
+        AND talk.page_namespace = 1";
+    $category_queries[] = $sql;
+
     foreach($category_queries as $category_query)
     {
       $sql = "
