@@ -37,15 +37,15 @@
             //clear last output
             document.getElementById("fixoutput").innerHTML = "";
 
-            //check name only if using WikiProject name
+            //check name
+            var name = document.getElementById("name");
+            var namestart = name.value;//save original value
             if(document.getElementById("is_wikiproject").checked)
             {
-                var name = document.getElementById("name");
-                var namestart = name.value;//save original value
                 if(name.value.substr(0,12) == "WikiProject ")//Remove WikiProject
                     name.value = name.value.substr(12);
-                name.value = mreplace(name.value," ","_");//Replace " " with "_"
             }
+            name.value = mreplace(name.value," ","_");//Replace " " with "_"
 
             //check cat
             var cat = document.getElementById("cat_name");
