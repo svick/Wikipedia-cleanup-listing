@@ -111,7 +111,8 @@ $cleanupcountercats = array(
   'Pages with DOIs inactive since 2010',
   'Pages with DOIs inactive since 2011',
   'All articles needing expert attention',
-  'Persondata templates without short description parameter');
+  'Persondata templates without short description parameter',
+  'Pages with several capitalization mistakes');
 $classes = array("FA", "A", "GA", "Bplus", "B", "C", "Start", "Stub", "FL", "List", "Unassessed", "NA", "Book", "Category", "Current", "Disambig", "File", "Future", "Merge", "Needed", "Portal", "Project", "Redirect", "Template");
 $importances = array("Top", "High", "Mid", "Low", "Unknown", "NA", "Bottom", "No");
 
