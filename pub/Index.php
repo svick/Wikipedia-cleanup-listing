@@ -40,7 +40,8 @@
       <li>
         <?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name", str_replace('_', ' ', $project['name'])) ?>
         (<?= $table_writer->FormatLink("CleanupListing.php?project=$encoded_name&format=csv", 'CSV') ?>,
-        <?= $table_writer->FormatLink("CleanupListingByCat.php?project=$encoded_name", 'by cat') ?>)
+        <?= $table_writer->FormatLink("CleanupListingByCat.php?project=$encoded_name", 'by cat') ?>,
+        <?= $table_writer->FormatLink("CleanupListingHistory.php?project=$encoded_name", 'history') ?>)
       </li>
 <?
         }
