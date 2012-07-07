@@ -39,7 +39,7 @@ $monthlycleanupcountercats = array(
   'Wikipedia articles with plot summary needing attention',
   'Articles with a promotional tone',
   'Articles with sections that need to be turned into prose',
-  'Articles to be pruned by month',
+  'Articles to be pruned',
   'Articles slanted towards recent events',
   'Recently revised',
   'Articles needing additional references',
@@ -93,7 +93,10 @@ $monthlycleanupcountercats = array(
   'Wikipedia articles without plot summaries',
   'Wikipedia red link cleanup',
   'Autobiographical articles',
-  'NRHP articles with dead external links');
+  'NRHP articles with dead external links',
+  'Copied and pasted articles and sections with url provided',
+  'Articles to be expanded with sources',
+  'Articles with close paraphrasing');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
