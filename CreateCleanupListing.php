@@ -72,7 +72,12 @@ $sql = "CREATE TABLE IF NOT EXISTS $user_db.categories(
 mysql_query($sql,$con)
         or die('Could not create categories table: ' . mysql_error());
 
-$sql = "SELECT DISTINCT projects.id AS id, name, cat_name
+$sql = "
+  SELECT id, name, cat_name,
+    (SELECT MAX(time) FROM $user_db.runs WHERE project_id = projects.id) AS time
+  FROM $user_db.projects
+  WHERE id IN (
+    SELECT DISTINCT projects.id
         FROM $user_db.projects
         LEFT JOIN $user_db.runs
             ON projects.id = runs.project_id
@@ -80,7 +85,8 @@ $sql = "SELECT DISTINCT projects.id AS id, name, cat_name
             AND DATEDIFF(NOW(), time) < 7
         WHERE active = 1
         AND (time IS NULL
-             OR force_create = 1)";
+             OR force_create = 1))
+  ORDER BY time";
 $projects = mysql_query($sql,$con)
         or die('Could not select projects: '. mysql_error());
 
