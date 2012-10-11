@@ -24,7 +24,7 @@ $sql = "
   where finished = 0
   and datediff(now(), time) > 7";
 $runs = mysql_query($sql,$con)
-        or die('Could not select projects: '. mysql_error());
+        or die('Could not select runs: '. mysql_error());
 
 while ($run = mysql_fetch_assoc($runs))
 {

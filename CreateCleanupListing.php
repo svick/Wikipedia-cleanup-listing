@@ -42,6 +42,7 @@ $sql = "CREATE TABLE IF NOT EXISTS $user_db.runs(
             cleanup_articles INT(8) UNSIGNED NULL,
             issues INT(8) UNSIGNED NULL,
             finished TINYINT(1) NOT NULL DEFAULT 0,
+            archived TINYINT(1) NOT NULL DEFAULT 0,
             FOREIGN KEY (project_id) REFERENCES projects(id)
         )";
 mysql_query($sql,$con)
