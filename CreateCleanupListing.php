@@ -39,6 +39,8 @@ $sql = "CREATE TABLE IF NOT EXISTS $user_db.runs(
             time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             project_id INT(8) UNSIGNED NOT NULL,
             total_articles INT(8) UNSIGNED NULL,
+            cleanup_articles INT(8) UNSIGNED NULL,
+            issues INT(8) UNSIGNED NULL,
             finished TINYINT(1) NOT NULL DEFAULT 0,
             FOREIGN KEY (project_id) REFERENCES projects(id)
         )";
@@ -234,6 +236,26 @@ while ($project = mysql_fetch_assoc($projects))
                 FROM $user_db.categories)";
     mysql_query($sql,$con)
             or die ('Could not delete "clean" articles: '. mysql_error());
+
+    //set cleanup_articles and issues
+    $sql = "UPDATE $user_db.runs
+            SET cleanup_articles = (
+              SELECT COUNT(*)
+              FROM $user_db.articles
+              WHERE articles.run_id = runs.id)
+            WHERE id = $run_id";
+    mysql_query($sql,$con)
+            or die ('Could not set cleanup_articles: '. mysql_error());
+
+    $sql = "UPDATE $user_db.runs
+            SET issues = (
+              SELECT COUNT(*)
+              FROM $user_db.articles
+              JOIN $user_db.categories ON categories.article_id = articles.id
+              WHERE articles.run_id = runs.id)
+            WHERE id = $run_id";
+    mysql_query($sql,$con)
+            or die ('Could not set issues: '. mysql_error());
 
     //Set importance
     foreach($importances as $importance)

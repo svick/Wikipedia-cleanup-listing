@@ -35,13 +35,8 @@
                     runs.id AS run_id,
                     runs.time AS time,
                     runs.total_articles AS total_articles,
-                    (SELECT COUNT(*)
-                     FROM articles
-                     WHERE run_id = runs.id) AS cleanup_articles,
-                    (SELECT COUNT(*)
-                     FROM articles
-                     JOIN categories on articles.id = categories.article_id
-                     WHERE run_id = runs.id) AS issues
+                    runs.cleanup_articles AS cleanup_articles,
+                    runs.issues AS issues
                 FROM projects
                 JOIN runs ON projects.id = runs.project_id
                 WHERE name = '$project_name_sql'
