@@ -64,7 +64,6 @@ $monthlycleanupcountercats = array(
   'Wikipedia articles needing factual verification',
   'Articles with weasel words',
   'Articles with specifically marked weasel-worded phrases',
-  'Articles that need to be wikified',
   'Articles needing the year an event occurred',
   'Articles with obsolete information',
   'Wikipedia articles needing reorganization',
@@ -96,7 +95,8 @@ $monthlycleanupcountercats = array(
   'NRHP articles with dead external links',
   'Copied and pasted articles and sections with url provided',
   'Articles to be expanded with sources',
-  'Articles with close paraphrasing');
+  'Articles with close paraphrasing',
+  'Articles with too few wikilinks');
 $cleanupcountercats = array(
   'Tree of Life cleanup',
   'Animals cleanup',
