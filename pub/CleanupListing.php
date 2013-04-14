@@ -73,6 +73,7 @@
                 new Column('Importance', true),
                 new Column('Class', true),
                 new Column('Count', true),
+                new Column('Oldest month', true),
                 new Column('Categories')));
 
         $sort = mysql_real_escape_string($_GET['sort']);
@@ -84,7 +85,18 @@
         if ($sort == 'count')
                 $sort = "$sort DESC";
 
-        $sql = "SELECT id, article, importance, class, (SELECT COUNT(*) FROM categories WHERE articles.id = categories.article_id) AS count
+        $oldest_month_query = "";
+
+        if ($sort == 'oldest month')
+                $sort = "(SELECT DATE_FORMAT(CONCAT(year, '-', month, '-0'), '%Y-%m') FROM categories WHERE articles.id = categories.article_id AND month IS NOT NULL ORDER BY year, month LIMIT 1)";
+
+        $sql = "SELECT
+                  id,
+                  article,
+                  importance,
+                  class,
+                  (SELECT COUNT(*) FROM categories WHERE articles.id = categories.article_id) AS count,
+                  (SELECT DATE_FORMAT(CONCAT(year, '-', month, '-0'), '%M %Y') FROM categories WHERE articles.id = categories.article_id AND month IS NOT NULL ORDER BY year, month LIMIT 1) AS oldest_month
                 FROM articles
                 WHERE run_id = $run_id
                 ORDER BY $sort";
@@ -106,6 +118,7 @@
               $article['importance'],
               $article['class'],
               $article['count'],
+              $article['oldest_month'],
               implode(', ', $categories)
             ));
         }
